@@ -7,10 +7,6 @@ tags: [mockito, refactoring, legacy code, dependency injection]
 ---
 {% include JB/setup %}
 
-=============================
-Easy Refactoring with Mockito
-=============================
-
 I aim to provide here a few insights into dealing with difficult to test code. Most of the time, when dealing with [legacy 
 code][legacy code], you come across wildly tangled code. Dependencies are not well defined which results in tightly coupled, difficult 
 to test code. Legacy systems which are running since a decade, have evolved in a strictly deadline driven, its-ugly-but-it-works 
