@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Welcome!
+title: Welcome
 tagline: If you can dream it, you can do it!
 ---
 {% include JB/setup %}
