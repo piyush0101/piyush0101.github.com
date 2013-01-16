@@ -1,7 +1,9 @@
 ---
 layout: post
 title: "Easy refactoring with Mockito"
-description: ""
+description: 
+tagline: "being careful doesn't help if you don't have necessary tools and techniques"
+
 category: 
 tags: [mockito, refactoring, legacy code, dependency injection]
 ---

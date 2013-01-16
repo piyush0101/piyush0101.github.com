@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Welcome
-tagline: If you can dream it, you can do it!
+title: my insights
+tagline: software, life and more...
 ---
 {% include JB/setup %}
 
