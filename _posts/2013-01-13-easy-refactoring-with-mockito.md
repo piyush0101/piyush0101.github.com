@@ -55,7 +55,7 @@ dependency injection. Refactoring from the worst kind of dependency tangle (inhe
 may (and is often not) not be a one step process. First goal is to make code testable and then continuously improve.
 
 Now, let's get take a deep dive into these problems and a few possible solutions.
-
+{% highlight java %}
 	public class AbstractTweetService {
  
 		protected List<Tweet> tweets;
@@ -86,7 +86,7 @@ Now, let's get take a deep dive into these problems and a few possible solutions
 		return numberOfTweets;
 		}
 	}
-
+{% endhighlight %}
 Note that there are several things going wrong here other than just inheritance. Inheritance is just making the matters
 worse. Couple of things I really don't like with this kind of code (with inheritance) is that it hides dependencies, 
 and hides details. There's no way of just reading the TweetCountService class and figuring out where is it getting the 
@@ -98,7 +98,7 @@ changes. Michael Feathers has done an amazing job in conveying the idea of takin
 and writing tests in legacy code.
 
 Here's the code after minimal amount of refactoring. Just enough to make the code testable.
-
+{% highlight java %}
 	public class AbstractTweetService {
 
 		protected List<Tweet> tweets;
@@ -128,7 +128,7 @@ Here's the code after minimal amount of refactoring. Just enough to make the cod
 			return numberOfTweets;
 		}
 	}
-
+{% endhighlight %}
 We did not get rid of the inheritance hierarchy, since that would have been a pervasive change and we did not have any 
 tests to start with. Michael Feathers has a good section about constructors doing too much work and how to parameterize
 constructors to break the dependencies. This is a similar technique that we use here. We create a TweetDownloaderHelper 
@@ -154,7 +154,7 @@ an eye out for [seams][seams].
 [cglib]: http://cglib.sourceforge.net/
 
 And, here's a test for our refactoring. Uses mockito to mock the dependency.
-
+{% highlight java %}
 	public class TweetCountServiceInheritanceTest {
 
 		@Test
@@ -173,7 +173,7 @@ And, here's a test for our refactoring. Uses mockito to mock the dependency.
 			assertEquals(0, numberOfTweets);
 		}
 	}
-
+{% endhighlight %}
 Other kinds of dependencies which infiltrate the code and make it really hard to test are static dependencies and thin air
 dependencies. Static dependencies for me are static method calls to a util/service class within some method. Static 
 dependencies can come as global references, singletons or just plain static method calls. I generally use extract method 
@@ -193,7 +193,7 @@ ThinAir dependencies as I like to call them are the dependencies grabbed out of 
 usually by creating a new instance of a collaborator class. These again are hard to mock and hence hard to test. We use
 parameterize constructor/adapt parameter refactoring to break these dependencies. If you come across code like the following,
 you know you have this kind of problem:
-
+{% highlight java %}
 	void m1() {
 		...
 		TweetDownloader = new TweetDownloader(); // thin air dependency
@@ -205,13 +205,13 @@ you know you have this kind of problem:
 		List<Tweet> tweets = TweetDownloader.downloadTweets(); // static dependency
 		...
 	}
-
+{% endhighlight %}
 Its like grabbing a dependency out of thin air! Ideal solution would be to inject dependencies, but tests first and then 
 more pervasive refactoring is an implied rule in legacy.
 
 Please look at the example code to get an idea of how to use mockito with these kinds of problems. Code below is code 
 after refactoring.  
-
+{% highlight java %}
 	public class TweetCountService {
 
 		public int countTweetsFrom(String user) {
@@ -259,7 +259,7 @@ after refactoring.
 			assertEquals(0, numberOfTweets);
 		}
 	}
-
+{% endhighlight %}
 This was a very simple approach showing very simple examples of some not so good patterns you find in code. Even when
 starting on a green field project, make sure the system evolves in a non legacy manner. Write tests, follow TDD and see
 the results. Code evolves a lot better!
