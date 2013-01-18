@@ -56,7 +56,7 @@ may (and is often not) not be a one step process. First goal is to make code tes
 
 Now, let's get take a deep dive into these problems and a few possible solutions.
 
-
+```java
 	public class AbstractTweetService {
  
 		protected List<Tweet> tweets;
@@ -87,6 +87,7 @@ Now, let's get take a deep dive into these problems and a few possible solutions
 		return numberOfTweets;
 		}
 	}
+```
 
 Note that there are several things going wrong here other than just inheritance. Inheritance is just making the matters
 worse. Couple of things I really don't like with this kind of code (with inheritance) is that it hides dependencies, 
@@ -100,7 +101,7 @@ and writing tests in legacy code.
 
 Here's the code after minimal amount of refactoring. Just enough to make the code testable.
 
-
+```java
 	public class AbstractTweetService {
 
 		protected List<Tweet> tweets;
@@ -130,6 +131,7 @@ Here's the code after minimal amount of refactoring. Just enough to make the cod
 			return numberOfTweets;
 		}
 	}
+```
 
 We did not get rid of the inheritance hierarchy, since that would have been a pervasive change and we did not have any 
 tests to start with. Michael Feathers has a good section about constructors doing too much work and how to parameterize
