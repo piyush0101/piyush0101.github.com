@@ -72,18 +72,18 @@ Now, let's get take a deep dive into these problems and a few possible solutions
 
 	public class TweetCountService extends AbstractTweetService {
  
-	public TweetCountService() {
-		super();
-	}
- 
-	public int countTweetsFrom(String user) {
-		int numberOfTweets = 0;
-		for (Tweet tweet : tweets) {
-			if (tweet.getUser().equals(user)) {
-				numberOfTweets++;
-			}
+		public TweetCountService() {
+			super();
 		}
-		return numberOfTweets;
+ 
+		public int countTweetsFrom(String user) {
+			int numberOfTweets = 0;
+			for (Tweet tweet : tweets) {
+				if (tweet.getUser().equals(user)) {
+					numberOfTweets++;
+				}
+			}
+			return numberOfTweets;
 		}
 	}
 {% endhighlight %}
@@ -114,9 +114,9 @@ Here's the code after minimal amount of refactoring. Just enough to make the cod
  
 	public class TweetCountService extends AbstractTweetService {
  
-	public TweetCountService(TweetDownloaderHelper downloaderHelper) {
-		super(downloaderHelper);
-	}
+		public TweetCountService(TweetDownloaderHelper downloaderHelper) {
+			super(downloaderHelper);
+		}
  
 		public int countTweetsFrom(String user) {
 			int numberOfTweets = 0;
