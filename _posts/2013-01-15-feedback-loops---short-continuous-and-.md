@@ -49,4 +49,22 @@ I could not get as complex as I would have liked to but you can see the subtleti
 
 Teams integrate code coverage tools with their continuous integration builds and see the coverage trends with time. A good approach at a macro level but having a coverage tool integrated with your development environment feeds back and enables smart decision making while actively developing. Priceless!
 
+[Fail fast][FF] systems, techniques, language features help in shortening the feedback loops in the sense that they immediately report any failure condition that is likely to lead to failure. When you are designing/developing big systems or features, this is a very useful technique. Some fail fast language features such as fail fast iterators which do not allow collections to be modified in two different ways while iterating through them prohibit flawed operations that are likely to lead to failure by giving early feedbacks and keeping the feedback loops really short. For instance, if you are programming in Java, the JVM would throw a `ConcurrentModificationException` if you are trying to do an operation which involves reading from a collection and writing to it in the same iterator.
 
+As I gave other examples earlier, continuous integration, continuous delivery were designed with the same basic principle. Having talked about techniques that facilitate short, continuous and honest feedback loops, I wanted to take a step back to talk more about the properties of good feedback loops themselves.
+
+It is very important to design your feedback loops with the right and relevant things feeding into the loop. Also, it is equally important to extract the most useful information as a result of the feedback process. In our TDD, example, I said that emma eclipse plugin along with highlighting partially covered lines in yellow, also clearly states the reason for partial coverage. This is an example of a good output from feedback loop. To get quality information out, you need to make sure you have correct **things** feeding into the loop. It would be out of scope of this blog to go into too much detail about what can be considered **correct** feed into a feedback loop. Getting your feedback loops right may not be an overnight process. It evolves continuously with good feedback. A vicious circle! But knowing the importance of them and paying proper attention to them in development strategies can provide some really good insights and results.
+
+## Life Activities
+
+I found a new interest in running last year. Initially, when I started, I could not run for 5 minutes. I would be out of breath and my legs would start hurting. But once you decide to lean into the pain, you tend to overcome the most difficult of challenges. I started setting small goals and tried to overcome them. After a while, I realized that I am not pushing myself enough. I was doing 2.3-2.4 miles in 25-30 minutes comfortably. I sure was going into a comfort zone. I wanted to increase my speed and increase my mileage. However, getting a feedback about your pace/speed at the end of your run is a long, inefficient feedback loop. I downloaded a [runkeeper][runkeeper] app on my phone. The app comes with a 5 min feedback by default. I am sure somebody might have put a good thought on 5 minutes. I feel 5 minute feedback loop in this case to be an optimal one. 
+
+[runkeeper]: http://runkeeper.com/home
+
+Getting a good feedback after every 5 minutes about my speed gives me a good idea on how good I am doing and how much do I need to push myself to accomplish my targets. My co ordinates feed into the loop and covered distance, average speed, average pace come as results every 5 minutes. I have found this loop to be extremely useful in the last one year. 
+
+My father is a long time diabetic patient. Long term diabetes has the tendency to deteriorate other organs of the body. So, it is really important to get yourself medically examined regularly, specially after a certain age. What he has been doing really well since last few years is having routine examinations. Examinations sometime result in no issues while at times they uncover some problems. Discovering problems in this way is good in the sense that you are discovering them early and often so they can be treated effectively at an early stage rather than when things have gone out of control. Another case of having efficient, short and continuous feedback loops. 
+
+I feel that if not everything then most of what you do should be backed by streamlined, short, continuous and honest feedback loops.
+
+Enjoy! 
