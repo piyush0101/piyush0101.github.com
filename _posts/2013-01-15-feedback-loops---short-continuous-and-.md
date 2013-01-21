@@ -39,4 +39,14 @@ Starting with a short example and then I will show a more complex scenario when 
 
 Please don't mind the typo wigglies ;). Green is for 'full line coverage' while Yellow is for 'partial line coverage'. There's one line in the code above that is marked as yellow. It is not difficult to figure out why that line is partially covered. There is a branch in the code and it looks like that in our tests, we have covered only one branch. This screenshot is from IntelliJ using the built in IntelliJ code coverage tool. The emma eclipse plugin clearly said "1 branch out of 2 missed" along with highlighting the yellow line. In this particular instance, it does not look like an instant feedback is providing anything other than just **Staring** at you and asking to be fixed. "Sometimes staring at the code is better than using anything else".
 
-Here is a slightly more complex example.  
+Here is a slightly more complex example. You do not always get the pleasure of dealing with coherent, small methods in legacy code. Those are the times when it is really important to make use of relevant tools and techniques. 
+
+![partial line coverage subtle][partial-subtle]
+
+[partial-subtle]: ../../../../assets/images/partial-subtle.png
+
+I could not get as complex as I would have liked to but you can see the subtleties here. A boolean that is returned from inside the loop is also a default return value in case control does not go at all inside the for loop. This example is still simple but I have seen cases where multiple domain objects are involved in making decisions in a single method and that's when it is really hard to sense safety. I find these instant feedback given by these tools to be amazingly useful in those cases. It is easy to overlook branches and complex subtelities in your tests. Not because you are less smart, not because you are less careful, but only because you may not be getting short, continuous and honest feedbacks.
+
+Teams integrate code coverage tools with their continuous integration builds and see the coverage trends with time. A good approach at a macro level but having a coverage tool integrated with your development environment feeds back and enables smart decision making while actively developing. Priceless!
+
+
