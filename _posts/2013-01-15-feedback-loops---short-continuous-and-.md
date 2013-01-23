@@ -57,9 +57,10 @@ It is very important to design your feedback loops with the right and relevant t
 
 ## Life Activities
 
-I found a new interest in running last year. Initially, when I started, I could not run for 5 minutes. I would be out of breath and my legs would start hurting. But once you decide to lean into the pain, you tend to overcome the most difficult of challenges. I started setting small goals and tried to overcome them. After a while, I realized that I am not pushing myself enough. I was doing 2.3-2.4 miles in 25-30 minutes comfortably. I sure was going into a comfort zone. I wanted to increase my speed and increase my mileage. However, getting a feedback about your pace/speed at the end of your run is a long, inefficient feedback loop. I downloaded a [runkeeper][runkeeper] app on my phone. The app comes with a 5 min feedback by default. I am sure somebody might have put a good thought on 5 minutes. I feel 5 minute feedback loop in this case to be an optimal one. 
+I found a new interest in running last year. Initially, when I started, I could not run for 5 minutes. I would be out of breath and my legs would start hurting. But once you decide to [lean into the pain][aaron], you tend to overcome the most difficult of challenges. I started setting small goals and tried to overcome them. After a while, I realized that I am not pushing myself enough. I was doing 2.3-2.4 miles in 25-30 minutes comfortably. I sure was going into a comfort zone. I wanted to increase my speed and increase my mileage. However, getting a feedback about your pace/speed at the end of your run is a long, inefficient feedback loop. I downloaded a [runkeeper][runkeeper] app on my phone. The app comes with a 5 min feedback by default. I am sure somebody might have put a good thought on 5 minutes. I feel 5 minute feedback loop in this case to be an optimal one. 
 
 [runkeeper]: http://runkeeper.com/home
+[aaron]: http://www.aaronsw.com/weblog/dalio
 
 Getting a good feedback after every 5 minutes about my speed gives me a good idea on how good I am doing and how much do I need to push myself to accomplish my targets. My co ordinates feed into the loop and covered distance, average speed, average pace come as results every 5 minutes. I have found this loop to be extremely useful in the last one year. 
 
