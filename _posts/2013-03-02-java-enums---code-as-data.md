@@ -44,9 +44,9 @@ This is a very simple smart enum which can execute different filters on a string
 
 {% highlight java %}
 
-Filter.UPPERCASE("smart enums are good!");
+Filter.UPPERCASE.filter("smart enums are good!");
 
-Filter.PROFANITY(Filter.UPPERCASE("smart enums are fucking awesome"))
+Filter.PROFANITY.filter(Filter.UPPERCASE.filter("smart enums are fucking awesome"))
 
 {% endhighlight %}
 
