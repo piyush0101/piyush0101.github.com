@@ -30,7 +30,7 @@ public enum TweetFilter {
 
     PROFANITY() {
         public String filter(String tweet) {
-            return tweet.replaceAll("bad", "***");
+            return tweet.replaceAll("fucking", "***");
         }
     };
 
@@ -72,7 +72,7 @@ public enum TweetFilter {
 
     PROFANITY("Profanity Filter") {
         public String filter(String tweet) {
-            return tweet.replaceAll("bad", "***");
+            return tweet.replaceAll("fucking", "***");
         }
     };
 
