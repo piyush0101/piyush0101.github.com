@@ -3,7 +3,7 @@ layout: post
 title: "Java enums - Code as Data?"
 description: ""
 category: 
-tags: []
+tags: [enum, code as data]
 ---
 {% include JB/setup %}
 
