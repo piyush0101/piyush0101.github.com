@@ -7,7 +7,7 @@ tags: []
 ---
 {% include JB/setup %}
 
-In my previous [blog][generic], I said that I did not like the idea of having an interface for declaring a `Column` type. I kind of wanted to take a step back and think more about. I wondered how this kind of abstractness is represented in some other paradigms like logic/functional. Started reading this wonderful [Haskell][haskell] [book][book] by Miran Lipovaca. Haskell is a pure functional language, Java is an object oriented language. Haskell has a very strong type system and does allow you to declare your own types as abstract interfaces and then have there concrete implemenations. Few of the abstract type classes in Haskell are `Eq`, `Ord`, `Show`, `Read` etc. All of these abstract type classes define some beahvior and the instances of these type classes implement that behavior. For instance, 
+In my previous [blog][generic], I said that I did not like the idea of having an interface for declaring a `Column` type. I kind of wanted to take a step back and think more about it. I wondered how this kind of abstractness is represented in some other paradigms like logic/functional. Started reading this wonderful [Haskell][haskell] [book][book] by Miran Lipovaca. Haskell is a pure functional language, Java is an object oriented language. Haskell has a very strong type system and does allow you to declare your own types as abstract interfaces and then have their concrete implemenations. Few of the abstract type classes in Haskell are `Eq`, `Ord`, `Show`, `Read` etc. All of these abstract type classes define some beahvior and the instances of these type classes implement that behavior. For instance, 
 
 	ghci> :t (==)
 	(==) :: (Eq a) => a -> a -> a
@@ -20,4 +20,4 @@ Now, coming to java which is an object oriented language with a mix of primitive
 [book]: http://www.amazon.com/Learn-You-Haskell-Great-Good/dp/1593272839/ref=sr_1_1?ie=UTF8&qid=1364686937&sr=8-1&keywords=haskell
 [haskell]: http://www.haskell.org/haskellwiki/Haskell
 
-PS: This is not a rant about any shortcomings of java. 
+**PS: This is not a rant about any shortcomings of Java.** 
