@@ -7,7 +7,7 @@ tags: [haskell, scala, functional programming]
 ---
 {% include JB/setup %}
 
-This weekend I was playing around experimenting with algebraic data types in Haskell. Implemented a Binary Search Tree with basic traversal algorithms and some utility functions like `find` and `miror`. Ported the same solution to Scala. Scala solution though not as clean as Haskell could be implmented with the same pattern matching philosophy. Below are the data types required to represent a binary tree in Haskell and Scala respectively.
+This weekend I just was playing around experimenting with algebraic data types in Haskell. Implemented a Binary Search Tree with basic traversal algorithms and some utility functions like `find` and `mirror`. Ported the same solution to Scala. Scala solution though not as clean as Haskell could be implmented with the same pattern matching philosophy. Below are the data types required to represent a binary tree in Haskell and Scala respectively.
 
 {% highlight haskell %}
 	data Tree a = Node a (Tree a) (Tree a) | EmptyTree
