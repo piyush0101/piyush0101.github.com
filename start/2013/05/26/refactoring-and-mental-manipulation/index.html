@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      
+        Refactoring and Mental Manipulation - 
+      
+      Piyush Srivastava's Blog
+    </title>
+    <meta name="description" content="">
+    <meta name="author" content="Piyush Srivastava">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <script src="/assets/themes/hooligan/js/jquery.min.js"></script>
+    <script src="/assets/themes/hooligan/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="/assets/themes/hooligan/css-social-buttons/css/zocial.stripped.css" />
+    <link href="/assets/themes/hooligan/css/pygments.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/hooligan/css/darkstrap.css" rel="stylesheet" type="text/css" media="all">    
+    <link href="/assets/themes/hooligan/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    
+    <!-- fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>      
+
+
+          <a class="brand" href="/">Piyush Srivastava's Blog</a>
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              
+              
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+            </ul>
+            <ul class="nav pull-right social visible-desktop">
+              <li class="divider-vertical"></li>
+              
+                <li>
+                  <a href="https://www.github.com/piyush0101" class="zocial github icon" target="_blank">
+                    <span class="hidden-desktop">Github</a>
+                  </a>
+                </li>
+              
+              
+                <li>
+                  <a href="https://profiles.google.com/" class="zocial googleplus icon" target="_blank">
+                    <span class="hidden-desktop">Google+</a>
+                  </a>
+                </li>
+                  
+              
+                <li>
+                  <a href="http://www.twitter.com/piyush0101" class="zocial twitter icon" target="_blank">
+                  <span class="hidden-desktop">Twitter</a>
+                  </a>
+                </li>
+                                        
+              
+                <li>
+                  <a href="http://www.facebook.com/piyush0101" class="zocial facebook icon" target="_blank">
+                    <span class="hidden-desktop">Facebook</a>
+                  </a>
+                </li>
+                         
+              
+                <li>
+                  <a href="http://www.linkedin.com/in/http://linkedin.com/pub/piyush-srivastava/b/306/a12/" class="zocial linkedin icon" target="_blank">
+                    <span class="hidden-desktop">LinkedIn</a>
+                  </a>
+                </li>
+                                  
+              
+                <li>
+                  <a href="http://feeds.feedburner.com/feedname" class="zocial rss icon" target="_blank">
+                    <span class="hidden-desktop">FeedBurner</a>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        
+<div class="page-header">
+  <h1>
+    Refactoring and Mental Manipulation 
+    
+  </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>Have you even run into a disappointing situation of spending a lot of effort refactoring legacy code only to realize other developers not using the patterns that you introduced? This is a very common problem I have seen recently. Good code remains sitting in one place being used only by a handful of people. Organizing a meeting - &#8216;a big honking mutex&#8217; - to let other people know of places to find good code, sending emails about the good patterns that you have started do not go very well according to my experience. To mentally manipulate other developers, there has to be a better way. In my opinion, its best done with code.</p>
+
+<p>I accidentally realized this while refactoring a moderately sized badly written class taking on too many responsibilities. When you see eight <code>field</code> dependencies in the class, you know the class is doing too much. Refactoring is best done in small incremental steps. How do you make sure the incremental steps provide the most value when other developers are likely to touch the same code in a matter of days than weeks or months. It is best to discourage anyone who is coming into the same code to not use the old, existing patterns and make it easier for them to use the new ones. Developers who are not very refactoring friendly and do not want to leave the room in a cleaner state than they found it would find the easiest way to get the job done. The easiest way is following the existing pattern which usually is the pattern in majority. For a class which has evolved over many years and grown to be more and more monolithic, it requires a few tricks to refactor effectively and discourage the use of existing not so good patterns.</p>
+
+<p>If a class has many dependencies, it is very likely that a few dependencies that you are trying to extract out are used in many different places. In that case, it is most likely that you will extract those dependencies but still leave the original ones in the class to have other places in the code still use them as they are. Remember, we said that refactoring is best done in small incremental steps. Our intentions have been good in making the code more maintenable and less error prone but people who are unfamiliar with the same code would probably not realize that in this state. Look at the code below.</p>
+<div class='highlight'><pre><code class='java'><span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>DataImporter</span> <span class='o'>{</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>DataProvider</span> <span class='n'>provider</span><span class='o'>;</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>A</span> <span class='n'>a</span><span class='o'>;</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>B</span> <span class='n'>b</span><span class='o'>;</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>C</span> <span class='n'>c</span><span class='o'>;</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>D</span> <span class='n'>d</span><span class='o'>;</span>
+    <span class='kd'>private</span> <span class='kd'>final</span> <span class='n'>E</span> <span class='n'>e</span><span class='o'>;</span>
+
+    <span class='kd'>public</span> <span class='nf'>DataImporter</span><span class='o'>(</span><span class='n'>DataProvider</span> <span class='n'>provider</span><span class='o'>,</span> <span class='n'>A</span> <span class='n'>a</span><span class='o'>,</span> <span class='n'>B</span> <span class='n'>b</span><span class='o'>,</span> <span class='n'>C</span> <span class='n'>c</span><span class='o'>,</span> <span class='n'>D</span> <span class='n'>d</span><span class='o'>,</span> <span class='n'>E</span> <span class='n'>e</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>provider</span> <span class='o'>=</span> <span class='n'>provider</span><span class='o'>;</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>a</span> <span class='o'>=</span> <span class='n'>a</span><span class='o'>;</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>b</span> <span class='o'>=</span> <span class='n'>b</span><span class='o'>;</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>c</span> <span class='o'>=</span> <span class='n'>c</span><span class='o'>;</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>d</span> <span class='o'>=</span> <span class='n'>d</span><span class='o'>;</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>e</span> <span class='o'>=</span> <span class='n'>e</span><span class='o'>;</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>m1</span><span class='o'>()</span> <span class='o'>{</span>
+        <span class='n'>a</span><span class='o'>.</span><span class='na'>do</span><span class='o'>();</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>m2</span><span class='o'>()</span> <span class='o'>{</span>
+        <span class='n'>b</span><span class='o'>.</span><span class='na'>process</span><span class='o'>();</span>
+        <span class='n'>a</span><span class='o'>.</span><span class='na'>do</span><span class='o'>();</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>m3</span><span class='o'>()</span> <span class='o'>{</span>
+        <span class='n'>d</span><span class='o'>.</span><span class='na'>execute</span><span class='o'>();</span>
+        <span class='n'>b</span><span class='o'>.</span><span class='na'>process</span><span class='o'>();</span>
+        <span class='n'>c</span><span class='o'>.</span><span class='na'>run</span><span class='o'>();</span>
+        <span class='n'>a</span><span class='o'>.</span><span class='na'>do</span><span class='o'>();</span>
+        <span class='n'>e</span><span class='o'>.</span><span class='na'>execute</span><span class='o'>();</span>
+    <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>If you are trying to do some refactoring in method <code>m1</code> which is 100 lines long and uses the dependency <code>A</code> and you have figured out an approach which would move that dependency in a different collaborator class, you would probably go ahead with that refactoring and create a new collaborator class with a dependency <code>A</code>. Its likely that you will leave the dependency <code>A</code> in the old class since its being used in a few other difficult to refactor methods and you are do not want to refactor those methods yet. The problems with this refactoring is that since it is really easy to use the old patterns (since the old dependencies are still there), other developers would probably use that or may even end up in a different refactoring direction altogether. Our intentions have been good but not very effective. A better approach might have been to increase the size of incremental refactoring step to remove the dependency on <code>A</code> altogether from this class so that the next person who comes to this class is not even able to use it and is forced to look into the patterns that you have introduced. The key mantra here is to make your patterns easier to use than the existing ones and ofcourse making them visible enough for others to see.</p>
+
+<p>As a consultant developer, it is not very feasible for me to rely on communication to make sure that code will evolve as I envisioned. I look out for ways to mentally manipulate other developers with code. It indeed is a very fascinating journey. I highly recommend you to try it out :).</p>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn prev" href="/2013/03/30/interfaces---why-and-when" title="Interfaces as Types">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next" href="/2013/06/22/working-with-legacy-state" title="Working with legacy state">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jekyllbootstrap'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+  
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>26 May 2013</span></div>
+    </section>
+         
+             
+  </div>
+</div>
+
+
+      </div>
+
+      <footer>
+        <p>&copy; Piyush Srivastava 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://github.com/dhulihan/hooligan" target="_blank">The Hooligan Theme</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
+

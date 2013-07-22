@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      
+        Interfaces as Types - 
+      
+      Piyush Srivastava's Blog
+    </title>
+    <meta name="description" content="">
+    <meta name="author" content="Piyush Srivastava">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <script src="/assets/themes/hooligan/js/jquery.min.js"></script>
+    <script src="/assets/themes/hooligan/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="/assets/themes/hooligan/css-social-buttons/css/zocial.stripped.css" />
+    <link href="/assets/themes/hooligan/css/pygments.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/hooligan/css/darkstrap.css" rel="stylesheet" type="text/css" media="all">    
+    <link href="/assets/themes/hooligan/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    
+    <!-- fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>      
+
+
+          <a class="brand" href="/">Piyush Srivastava's Blog</a>
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              
+              
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+            </ul>
+            <ul class="nav pull-right social visible-desktop">
+              <li class="divider-vertical"></li>
+              
+                <li>
+                  <a href="https://www.github.com/piyush0101" class="zocial github icon" target="_blank">
+                    <span class="hidden-desktop">Github</a>
+                  </a>
+                </li>
+              
+              
+                <li>
+                  <a href="https://profiles.google.com/" class="zocial googleplus icon" target="_blank">
+                    <span class="hidden-desktop">Google+</a>
+                  </a>
+                </li>
+                  
+              
+                <li>
+                  <a href="http://www.twitter.com/piyush0101" class="zocial twitter icon" target="_blank">
+                  <span class="hidden-desktop">Twitter</a>
+                  </a>
+                </li>
+                                        
+              
+                <li>
+                  <a href="http://www.facebook.com/piyush0101" class="zocial facebook icon" target="_blank">
+                    <span class="hidden-desktop">Facebook</a>
+                  </a>
+                </li>
+                         
+              
+                <li>
+                  <a href="http://www.linkedin.com/in/http://linkedin.com/pub/piyush-srivastava/b/306/a12/" class="zocial linkedin icon" target="_blank">
+                    <span class="hidden-desktop">LinkedIn</a>
+                  </a>
+                </li>
+                                  
+              
+                <li>
+                  <a href="http://feeds.feedburner.com/feedname" class="zocial rss icon" target="_blank">
+                    <span class="hidden-desktop">FeedBurner</a>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        
+<div class="page-header">
+  <h1>
+    Interfaces as Types 
+    
+  </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>In my previous <a href='http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting/'>blog</a>, I said that I did not like the idea of having an interface for declaring a <code>Column</code> type. I kind of wanted to take a step back and think more about it. I wondered how this kind of abstractness is represented in some other paradigms like logic/functional. Started reading this wonderful <a href='http://www.haskell.org/haskellwiki/Haskell'>Haskell</a> <a href='http://www.amazon.com/Learn-You-Haskell-Great-Good/dp/1593272839/ref=sr_1_1?ie=UTF8&amp;qid=1364686937&amp;sr=8-1&amp;keywords=haskell'>book</a> by Miran Lipovaca. Haskell is a pure functional language, Java is an object oriented language. Haskell has a very strong type system and does allow you to declare your own types as abstract interfaces and then have their concrete implemenations. Few of the abstract type classes in Haskell are <code>Eq</code>, <code>Ord</code>, <code>Show</code>, <code>Read</code> etc. All of these abstract type classes define some beahvior and the instances of these type classes implement that behavior. For instance,</p>
+
+<pre><code>ghci&gt; :t (==)
+(==) :: (Eq a) =&gt; a -&gt; a -&gt; a</code></pre>
+
+<p>checking the type of <code>==</code> operator in <a href='http://www.haskell.org/haskellwiki/Haskell'>Haskell</a> gives you its type signature as above. Type signature tells that the <code>==</code> operator is a function that operates on instances of type <code>Eq</code>.</p>
+
+<p>Now, coming to java which is an object oriented language with a mix of primitive types and Objects. Java 5 tried to make java a pure object oriented language by having classes for primitive types such as Integer, Boolean, Float etc. To define your own types in an object oriented language you are probably better off defining them as abstract classes or interfaces. I do not know the original motivation of java interfaces but I would not hesitate using them for defining abstract type classes as in <a href='http://www.haskell.org/haskellwiki/Haskell'>Haskell</a> with some behavior, as well as using them as an abstraction for certain system components. In my previous <a href='http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting/'>blog</a>, I have used them as a type class for a new custom type <code>Column</code> which is perfectly fine in my opinion. Abstract classes and interfaces can be used interchangeably for defining custom type classes.</p>
+
+<p><strong>PS: This is not a rant about any shortcomings of Java.</strong></p>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn prev" href="/2013/03/24/towards-generic-programming---concept-lifting" title="Towards Generic Programming - Concept Lifting">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next" href="/2013/05/26/refactoring-and-mental-manipulation" title="Refactoring and Mental Manipulation">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jekyllbootstrap'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+  
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>30 March 2013</span></div>
+    </section>
+         
+             
+  </div>
+</div>
+
+
+      </div>
+
+      <footer>
+        <p>&copy; Piyush Srivastava 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://github.com/dhulihan/hooligan" target="_blank">The Hooligan Theme</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
+

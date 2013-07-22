@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      
+        Towards Generic Programming - Concept Lifting - 
+      
+      Piyush Srivastava's Blog
+    </title>
+    <meta name="description" content="">
+    <meta name="author" content="Piyush Srivastava">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <script src="/assets/themes/hooligan/js/jquery.min.js"></script>
+    <script src="/assets/themes/hooligan/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="/assets/themes/hooligan/css-social-buttons/css/zocial.stripped.css" />
+    <link href="/assets/themes/hooligan/css/pygments.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/hooligan/css/darkstrap.css" rel="stylesheet" type="text/css" media="all">    
+    <link href="/assets/themes/hooligan/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    
+    <!-- fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>      
+
+
+          <a class="brand" href="/">Piyush Srivastava's Blog</a>
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              
+              
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+            </ul>
+            <ul class="nav pull-right social visible-desktop">
+              <li class="divider-vertical"></li>
+              
+                <li>
+                  <a href="https://www.github.com/piyush0101" class="zocial github icon" target="_blank">
+                    <span class="hidden-desktop">Github</a>
+                  </a>
+                </li>
+              
+              
+                <li>
+                  <a href="https://profiles.google.com/" class="zocial googleplus icon" target="_blank">
+                    <span class="hidden-desktop">Google+</a>
+                  </a>
+                </li>
+                  
+              
+                <li>
+                  <a href="http://www.twitter.com/piyush0101" class="zocial twitter icon" target="_blank">
+                  <span class="hidden-desktop">Twitter</a>
+                  </a>
+                </li>
+                                        
+              
+                <li>
+                  <a href="http://www.facebook.com/piyush0101" class="zocial facebook icon" target="_blank">
+                    <span class="hidden-desktop">Facebook</a>
+                  </a>
+                </li>
+                         
+              
+                <li>
+                  <a href="http://www.linkedin.com/in/http://linkedin.com/pub/piyush-srivastava/b/306/a12/" class="zocial linkedin icon" target="_blank">
+                    <span class="hidden-desktop">LinkedIn</a>
+                  </a>
+                </li>
+                                  
+              
+                <li>
+                  <a href="http://feeds.feedburner.com/feedname" class="zocial rss icon" target="_blank">
+                    <span class="hidden-desktop">FeedBurner</a>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        
+<div class="page-header">
+  <h1>
+    Towards Generic Programming - Concept Lifting 
+    
+  </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>It is almost invariably the case that I have seen developers caught too much in making the solution &#8216;generic&#8217; and be able to handle different kinds of data, data types, concepts etc. I strongly feel this is a wrong approach to coming up with generic solutions. There is a very strong emphasis in the software development community for DRY (Do not replicate yourself). Colleague <a href='http://kevinmhickey.github.com'>Kevin Hickey</a> has an excellent <a href='http://kevinmhickey.github.com/2013/01/12/why--dry/'>post</a> on why DRY is important. I have no issues with DRY but I feel premature generifying/drying does not let you see the <a href='http://www.generic-programming.org/about/intro/lifting.php'>concepts that can be lifted</a>. You may come up with a generic solution which may seem generic but in reality is missing a lot. It is very important to be able to visualize concepts before lifting them. While I have read authors describing evils of premature optimization, I have not seen a lot written on the cons of premature generalization.</p>
+
+<p>I may blabber without justifying myself and the best way to justify is to justify with code! I have worked quite a bit with legacy codebases in the Java programming language. Though this blog is not about legacy code, I have definitely seen patterns that have led me to a few discoveries regarding generic programming. One of the anti-pattern that I have seen over and over again is the over use of <code>if else</code> and <code>switch case</code> conditionals. They significantly increase the <a href='http://en.wikipedia.org/wiki/Cyclomatic_complexity'>cyclomatic complexity</a> of your code and the complexity goes on increasing as the number of branches increase and results in hard to maintain, highy <a href='http://blog.ploeh.dk/2011/05/24/DesignSmellTemporalCoupling/'>temporally coupled</a>, difficult to test code. The question that comes to mind is how did we even end up in such a place. The answer is simple, we did not think hard enough to model our problem in an object oriented way or I would rather take a different perspective on that. We started off well, doing the minimum thing that needed to be done but when we started seeing the patterns repeated over and over again, we did not try to extract them into their own concepts which resulted in an ugly 1000 line long class with a huge cascade of <em>if elses</em> or <em>switch cases</em>. Here is an example.</p>
+<div class='highlight'><pre><code class='java'><span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>ShipmentTableModel</span> <span class='kd'>extends</span> <span class='n'>AbstractTableModel</span> <span class='o'>{</span>
+    
+    <span class='kd'>private</span> <span class='n'>String</span><span class='o'>[]</span> <span class='n'>names</span> <span class='o'>=</span> <span class='o'>{</span><span class='s'>&quot;Shipment Origin&quot;</span><span class='o'>,</span> <span class='s'>&quot;Shipment Destination&quot;</span><span class='o'>,</span> <span class='s'>&quot;Tax&quot;</span><span class='o'>};</span>
+    <span class='kd'>private</span> <span class='kt'>int</span><span class='o'>[]</span> <span class='n'>width</span> <span class='o'>=</span> <span class='o'>{</span><span class='mi'>40</span><span class='o'>,</span> <span class='mi'>40</span><span class='o'>,</span> <span class='mi'>40</span><span class='o'>};</span>
+    <span class='kd'>private</span> <span class='kt'>boolean</span><span class='o'>[]</span> <span class='n'>editable</span> <span class='o'>=</span> <span class='o'>{</span><span class='kc'>false</span><span class='o'>,</span> <span class='kc'>false</span><span class='o'>,</span> <span class='kc'>true</span><span class='o'>};</span>
+    
+    <span class='kd'>public</span> <span class='n'>String</span> <span class='nf'>getName</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>names</span><span class='o'>[</span><span class='n'>columnIndex</span><span class='o'>];</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>int</span> <span class='nf'>getWidth</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>width</span><span class='o'>[</span><span class='n'>columnIndex</span><span class='o'>];</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>boolean</span> <span class='nf'>isEditable</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>editable</span><span class='o'>[</span><span class='n'>columnIndex</span><span class='o'>];</span>
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='n'>Class</span> <span class='nf'>getColumnClass</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>switch</span> <span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+            <span class='k'>case</span> <span class='mi'>0</span> <span class='o'>:</span> <span class='k'>return</span> <span class='n'>String</span><span class='o'>.</span><span class='na'>class</span><span class='o'>;</span>
+            <span class='k'>case</span> <span class='mi'>1</span> <span class='o'>:</span> <span class='k'>return</span> <span class='n'>Integer</span><span class='o'>.</span><span class='na'>class</span><span class='o'>;</span>
+            <span class='k'>case</span> <span class='mi'>2</span> <span class='o'>:</span> <span class='k'>return</span> <span class='n'>Boolean</span><span class='o'>.</span><span class='na'>class</span><span class='o'>;</span>
+            <span class='k'>default</span> <span class='o'>:</span> <span class='k'>return</span> <span class='n'>Object</span><span class='o'>.</span><span class='na'>class</span><span class='o'>;</span>
+        <span class='o'>}</span>                           
+    <span class='o'>}</span>
+    
+    <span class='kd'>public</span> <span class='kt'>boolean</span> <span class='nf'>validate</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>,</span> <span class='n'>Object</span> <span class='n'>value</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>switch</span> <span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+            <span class='k'>case</span> <span class='mi'>0</span> <span class='o'>:</span> 
+                 <span class='n'>String</span> <span class='n'>aValue</span> <span class='o'>=</span> <span class='o'>(</span><span class='n'>String</span><span class='o'>)</span> <span class='n'>value</span><span class='o'>;</span>
+                 <span class='k'>return</span> <span class='n'>aValue</span> <span class='o'>!=</span> <span class='kc'>null</span> <span class='o'>&amp;&amp;</span> <span class='o'>!</span><span class='n'>aValue</span><span class='o'>.</span><span class='na'>equals</span><span class='o'>(</span><span class='s'>&quot;&quot;</span><span class='o'>);</span>
+            <span class='k'>case</span> <span class='mi'>1</span> <span class='o'>:</span>
+                <span class='n'>Integer</span> <span class='n'>intValue</span> <span class='o'>=</span> <span class='o'>(</span><span class='n'>Integer</span><span class='o'>)</span> <span class='n'>value</span><span class='o'>;</span>
+                <span class='k'>return</span> <span class='n'>intValue</span> <span class='o'>!=</span> <span class='mi'>0</span><span class='o'>;</span>
+            <span class='k'>case</span> <span class='mi'>3</span><span class='o'>:</span>
+            <span class='k'>default</span><span class='o'>:</span> <span class='k'>return</span> <span class='kc'>true</span><span class='o'>;</span>
+        <span class='o'>}</span>
+    <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>This class for sure violates the single responsibility principle. The name of the class says that it is a model class but it is doing a lot more than that. Our TableModel class feeds in data to a few other classes in the system. It is easy to figure of what kind of data those other classes are looking for. Looks like dependent classes are mainly concerned about properties of individual columns in this model. Do we see any concepts in this class which are repeated and can be extracted out? Yes, all the methods in this class take in a column index and give data back for that index. I think there is a <code>Column</code> class hiding somewhere. Let us start with something simple. We can extract out properties of a column in an interface and have our concrete columns implement that interface. I personally do not like use of interfaces for such needs but we will slowly move in the right direction. We do not want to get caught up in generalizing everything all at once.</p>
+<div class='highlight'><pre><code class='java'><span class='kd'>public</span> <span class='kd'>interface</span> <span class='nc'>Column</span> <span class='o'>{</span>
+    <span class='n'>String</span> <span class='nf'>getName</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>);</span>
+    
+    <span class='kt'>int</span> <span class='nf'>getWidth</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>);</span>
+    
+    <span class='n'>Class</span> <span class='nf'>getColumnClass</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>);</span>
+    
+    <span class='kt'>boolean</span> <span class='nf'>validate</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>,</span> <span class='kt'>boolean</span> <span class='n'>value</span><span class='o'>);</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>and our model class can now just take a list of columns and operate on them and can be possibly renamed to be <code>TableModel</code> instead of <code>ShipmentTableModel</code> since it is generic enough to take different kinds of columns and delegate the tasks to concrete column classes.</p>
+<div class='highlight'><pre><code class='java'><span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TableModel</span> <span class='o'>{</span>
+
+    <span class='kd'>private</span> <span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Column</span><span class='o'>&gt;</span> <span class='n'>columns</span><span class='o'>;</span>
+
+    <span class='kd'>public</span> <span class='nf'>TableModel</span><span class='o'>(</span><span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Column</span><span class='o'>&gt;</span> <span class='n'>columns</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>this</span><span class='o'>.</span><span class='na'>columns</span> <span class='o'>=</span> <span class='n'>columns</span><span class='o'>;</span>
+    <span class='o'>}</span>
+
+    <span class='kd'>public</span> <span class='n'>String</span> <span class='nf'>getName</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>columns</span><span class='o'>.</span><span class='na'>get</span><span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>).</span><span class='na'>getName</span><span class='o'>();</span>
+    <span class='o'>}</span>
+
+    <span class='kd'>public</span> <span class='kt'>int</span> <span class='nf'>getWidth</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>columns</span><span class='o'>.</span><span class='na'>get</span><span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>).</span><span class='na'>getWidth</span><span class='o'>();</span>
+    <span class='o'>}</span>
+
+    <span class='kd'>public</span> <span class='kt'>boolean</span> <span class='nf'>isEditable</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>columns</span><span class='o'>.</span><span class='na'>get</span><span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>).</span><span class='na'>isEditable</span><span class='o'>();</span>
+    <span class='o'>}</span>
+
+    <span class='kd'>public</span> <span class='n'>Class</span> <span class='nf'>getColumnClass</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>columns</span><span class='o'>.</span><span class='na'>get</span><span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>).</span><span class='na'>getColumnClass</span><span class='o'>();</span>
+    <span class='o'>}</span>
+
+    <span class='kd'>public</span> <span class='kt'>boolean</span> <span class='nf'>validate</span><span class='o'>(</span><span class='kt'>int</span> <span class='n'>columnIndex</span><span class='o'>,</span> <span class='n'>Object</span> <span class='n'>value</span><span class='o'>)</span> <span class='o'>{</span>
+        <span class='k'>return</span> <span class='n'>columns</span><span class='o'>.</span><span class='na'>get</span><span class='o'>(</span><span class='n'>columnIndex</span><span class='o'>).</span><span class='na'>validate</span><span class='o'>(</span><span class='n'>value</span><span class='o'>);</span>
+    <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>That looks much cleaner with clear separation of responsibilities. Model is no longer responsible for creating Column concepts and doing anything but delegating work to the actual column classes. More importantly, if we have a need to create a new table for some other purpose, no new model needs to be created. This <code>TableModel</code> class can be reused after constructing the appropriate columns from column factories. Separation of concerns in this case is also allowing us to see other possibilities which we will have a look in the coming blogs. Thanks :)</p>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn prev" href="/2013/03/02/java-enums---code-as-data" title="Java enums - Code as Data?">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next" href="/2013/03/30/interfaces---why-and-when" title="Interfaces as Types">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jekyllbootstrap'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+  
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>24 March 2013</span></div>
+    </section>
+         
+    
+      <section>
+        <h4>Tags</h4>
+        <ul class="tag_box">
+          
+          
+
+
+  
+     
+    	<li><a href="/tags.html#generic programming-ref">generic programming <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#concept lifting-ref">concept lifting <span>1</span></a></li>
+    
+  
+
+
+
+        </ul>
+      </section>
+             
+  </div>
+</div>
+
+
+      </div>
+
+      <footer>
+        <p>&copy; Piyush Srivastava 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://github.com/dhulihan/hooligan" target="_blank">The Hooligan Theme</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
+

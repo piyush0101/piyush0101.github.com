@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Piyush Srivastava's Blog</title>
+ <link href="http://piyush0101.github.com/atom.xml" rel="self"/>
+ <link href="http://piyush0101.github.com"/>
+ <updated>2013-07-21T21:07:23-05:00</updated>
+ <id>http://piyush0101.github.com</id>
+ <author>
+   <name>Piyush Srivastava</name>
+   <email>firstname dot 0101 at gmail dot com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Fold and Collect</title>
+   <link href="http://piyush0101.github.com/2013/07/21/fold-and-collect"/>
+   <updated>2013-07-21T00:00:00-05:00</updated>
+   <id>http://piyush0101.github.com/2013/07/21/fold-and-collect</id>
+   <content type="html">&lt;p&gt;This weekend I was just playing around experimenting with algebraic data types in Haskell. Implemented a Binary Search Tree with basic traversal algorithms and some utility functions like find and miror. Ported the same solution to Scala. Scala solution though not as clean as Haskell could be implmented with the same pattern matching philosophy.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='scala'&gt; 
+	&lt;span class='k'&gt;sealed&lt;/span&gt; &lt;span class='k'&gt;abstract&lt;/span&gt; &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;BinaryTree&lt;/span&gt;
+
+	&lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;Node&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;elem&lt;/span&gt;&lt;span class='k'&gt;:&lt;/span&gt; &lt;span class='kt'&gt;Int&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;left&lt;/span&gt;&lt;span class='k'&gt;:&lt;/span&gt; &lt;span class='kt'&gt;BinaryTree&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;right&lt;/span&gt;&lt;span class='k'&gt;:&lt;/span&gt; &lt;span class='kt'&gt;BinaryTree&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='k'&gt;extends&lt;/span&gt; &lt;span class='nc'&gt;BinaryTree&lt;/span&gt;
+	&lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='k'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;EmptyTree&lt;/span&gt; &lt;span class='k'&gt;extends&lt;/span&gt; &lt;span class='nc'&gt;BinaryTree&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Working with legacy state</title>
+   <link href="http://piyush0101.github.com/2013/06/22/working-with-legacy-state"/>
+   <updated>2013-06-22T00:00:00-05:00</updated>
+   <id>http://piyush0101.github.com/2013/06/22/working-with-legacy-state</id>
+   <content type="html"></content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring and Mental Manipulation</title>
+   <link href="http://piyush0101.github.com/2013/05/26/refactoring-and-mental-manipulation"/>
+   <updated>2013-05-26T00:00:00-05:00</updated>
+   <id>http://piyush0101.github.com/2013/05/26/refactoring-and-mental-manipulation</id>
+   <content type="html">&lt;p&gt;Have you even run into a disappointing situation of spending a lot of effort refactoring legacy code only to realize other developers not using the patterns that you introduced? This is a very common problem I have seen recently. Good code remains sitting in one place being used only by a handful of people. Organizing a meeting - &amp;#8216;a big honking mutex&amp;#8217; - to let other people know of places to find good code, sending emails about the good patterns that you have started do not go very well according to my experience. To mentally manipulate other developers, there has to be a better way. In my opinion, its best done with code.&lt;/p&gt;
+
+&lt;p&gt;I accidentally realized this while refactoring a moderately sized badly written class taking on too many responsibilities. When you see eight &lt;code&gt;field&lt;/code&gt; dependencies in the class, you know the class is doing too much. Refactoring is best done in small incremental steps. How do you make sure the incremental steps provide the most value when other developers are likely to touch the same code in a matter of days than weeks or months. It is best to discourage anyone who is coming into the same code to not use the old, existing patterns and make it easier for them to use the new ones. Developers who are not very refactoring friendly and do not want to leave the room in a cleaner state than they found it would find the easiest way to get the job done. The easiest way is following the existing pattern which usually is the pattern in majority. For a class which has evolved over many years and grown to be more and more monolithic, it requires a few tricks to refactor effectively and discourage the use of existing not so good patterns.&lt;/p&gt;
+
+&lt;p&gt;If a class has many dependencies, it is very likely that a few dependencies that you are trying to extract out are used in many different places. In that case, it is most likely that you will extract those dependencies but still leave the original ones in the class to have other places in the code still use them as they are. Remember, we said that refactoring is best done in small incremental steps. Our intentions have been good in making the code more maintenable and less error prone but people who are unfamiliar with the same code would probably not realize that in this state. Look at the code below.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;DataImporter&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;DataProvider&lt;/span&gt; &lt;span class='n'&gt;provider&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;A&lt;/span&gt; &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;B&lt;/span&gt; &lt;span class='n'&gt;b&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;C&lt;/span&gt; &lt;span class='n'&gt;c&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;D&lt;/span&gt; &lt;span class='n'&gt;d&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kd'&gt;final&lt;/span&gt; &lt;span class='n'&gt;E&lt;/span&gt; &lt;span class='n'&gt;e&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;DataImporter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;DataProvider&lt;/span&gt; &lt;span class='n'&gt;provider&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;A&lt;/span&gt; &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;B&lt;/span&gt; &lt;span class='n'&gt;b&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;C&lt;/span&gt; &lt;span class='n'&gt;c&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;D&lt;/span&gt; &lt;span class='n'&gt;d&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;E&lt;/span&gt; &lt;span class='n'&gt;e&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;provider&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;provider&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;a&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;b&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;b&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;c&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;c&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;d&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;d&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;e&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;e&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;m1&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;do&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;m2&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='n'&gt;b&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;process&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;do&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;m3&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='n'&gt;d&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;execute&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='n'&gt;b&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;process&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='n'&gt;c&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;run&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='n'&gt;a&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;do&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='n'&gt;e&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;execute&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you are trying to do some refactoring in method &lt;code&gt;m1&lt;/code&gt; which is 100 lines long and uses the dependency &lt;code&gt;A&lt;/code&gt; and you have figured out an approach which would move that dependency in a different collaborator class, you would probably go ahead with that refactoring and create a new collaborator class with a dependency &lt;code&gt;A&lt;/code&gt;. Its likely that you will leave the dependency &lt;code&gt;A&lt;/code&gt; in the old class since its being used in a few other difficult to refactor methods and you are do not want to refactor those methods yet. The problems with this refactoring is that since it is really easy to use the old patterns (since the old dependencies are still there), other developers would probably use that or may even end up in a different refactoring direction altogether. Our intentions have been good but not very effective. A better approach might have been to increase the size of incremental refactoring step to remove the dependency on &lt;code&gt;A&lt;/code&gt; altogether from this class so that the next person who comes to this class is not even able to use it and is forced to look into the patterns that you have introduced. The key mantra here is to make your patterns easier to use than the existing ones and ofcourse making them visible enough for others to see.&lt;/p&gt;
+
+&lt;p&gt;As a consultant developer, it is not very feasible for me to rely on communication to make sure that code will evolve as I envisioned. I look out for ways to mentally manipulate other developers with code. It indeed is a very fascinating journey. I highly recommend you to try it out :).&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Interfaces as Types</title>
+   <link href="http://piyush0101.github.com/2013/03/30/interfaces---why-and-when"/>
+   <updated>2013-03-30T00:00:00-05:00</updated>
+   <id>http://piyush0101.github.com/2013/03/30/interfaces---why-and-when</id>
+   <content type="html">&lt;p&gt;In my previous &lt;a href='http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting/'&gt;blog&lt;/a&gt;, I said that I did not like the idea of having an interface for declaring a &lt;code&gt;Column&lt;/code&gt; type. I kind of wanted to take a step back and think more about it. I wondered how this kind of abstractness is represented in some other paradigms like logic/functional. Started reading this wonderful &lt;a href='http://www.haskell.org/haskellwiki/Haskell'&gt;Haskell&lt;/a&gt; &lt;a href='http://www.amazon.com/Learn-You-Haskell-Great-Good/dp/1593272839/ref=sr_1_1?ie=UTF8&amp;amp;qid=1364686937&amp;amp;sr=8-1&amp;amp;keywords=haskell'&gt;book&lt;/a&gt; by Miran Lipovaca. Haskell is a pure functional language, Java is an object oriented language. Haskell has a very strong type system and does allow you to declare your own types as abstract interfaces and then have their concrete implemenations. Few of the abstract type classes in Haskell are &lt;code&gt;Eq&lt;/code&gt;, &lt;code&gt;Ord&lt;/code&gt;, &lt;code&gt;Show&lt;/code&gt;, &lt;code&gt;Read&lt;/code&gt; etc. All of these abstract type classes define some beahvior and the instances of these type classes implement that behavior. For instance,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ghci&amp;gt; :t (==)
+(==) :: (Eq a) =&amp;gt; a -&amp;gt; a -&amp;gt; a&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;checking the type of &lt;code&gt;==&lt;/code&gt; operator in &lt;a href='http://www.haskell.org/haskellwiki/Haskell'&gt;Haskell&lt;/a&gt; gives you its type signature as above. Type signature tells that the &lt;code&gt;==&lt;/code&gt; operator is a function that operates on instances of type &lt;code&gt;Eq&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, coming to java which is an object oriented language with a mix of primitive types and Objects. Java 5 tried to make java a pure object oriented language by having classes for primitive types such as Integer, Boolean, Float etc. To define your own types in an object oriented language you are probably better off defining them as abstract classes or interfaces. I do not know the original motivation of java interfaces but I would not hesitate using them for defining abstract type classes as in &lt;a href='http://www.haskell.org/haskellwiki/Haskell'&gt;Haskell&lt;/a&gt; with some behavior, as well as using them as an abstraction for certain system components. In my previous &lt;a href='http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting/'&gt;blog&lt;/a&gt;, I have used them as a type class for a new custom type &lt;code&gt;Column&lt;/code&gt; which is perfectly fine in my opinion. Abstract classes and interfaces can be used interchangeably for defining custom type classes.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;PS: This is not a rant about any shortcomings of Java.&lt;/strong&gt;&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Towards Generic Programming - Concept Lifting</title>
+   <link href="http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting"/>
+   <updated>2013-03-24T00:00:00-05:00</updated>
+   <id>http://piyush0101.github.com/2013/03/24/towards-generic-programming---concept-lifting</id>
+   <content type="html">&lt;p&gt;It is almost invariably the case that I have seen developers caught too much in making the solution &amp;#8216;generic&amp;#8217; and be able to handle different kinds of data, data types, concepts etc. I strongly feel this is a wrong approach to coming up with generic solutions. There is a very strong emphasis in the software development community for DRY (Do not replicate yourself). Colleague &lt;a href='http://kevinmhickey.github.com'&gt;Kevin Hickey&lt;/a&gt; has an excellent &lt;a href='http://kevinmhickey.github.com/2013/01/12/why--dry/'&gt;post&lt;/a&gt; on why DRY is important. I have no issues with DRY but I feel premature generifying/drying does not let you see the &lt;a href='http://www.generic-programming.org/about/intro/lifting.php'&gt;concepts that can be lifted&lt;/a&gt;. You may come up with a generic solution which may seem generic but in reality is missing a lot. It is very important to be able to visualize concepts before lifting them. While I have read authors describing evils of premature optimization, I have not seen a lot written on the cons of premature generalization.&lt;/p&gt;
+
+&lt;p&gt;I may blabber without justifying myself and the best way to justify is to justify with code! I have worked quite a bit with legacy codebases in the Java programming language. Though this blog is not about legacy code, I have definitely seen patterns that have led me to a few discoveries regarding generic programming. One of the anti-pattern that I have seen over and over again is the over use of &lt;code&gt;if else&lt;/code&gt; and &lt;code&gt;switch case&lt;/code&gt; conditionals. They significantly increase the &lt;a href='http://en.wikipedia.org/wiki/Cyclomatic_complexity'&gt;cyclomatic complexity&lt;/a&gt; of your code and the complexity goes on increasing as the number of branches increase and results in hard to maintain, highy &lt;a href='http://blog.ploeh.dk/2011/05/24/DesignSmellTemporalCoupling/'&gt;temporally coupled&lt;/a&gt;, difficult to test code. The question that comes to mind is how did we even end up in such a place. The answer is simple, we did not think hard enough to model our problem in an object oriented way or I would rather take a different perspective on that. We started off well, doing the minimum thing that needed to be done but when we started seeing the patterns repeated over and over again, we did not try to extract them into their own concepts which resulted in an ugly 1000 line long class with a huge cascade of &lt;em&gt;if elses&lt;/em&gt; or &lt;em&gt;switch cases&lt;/em&gt;. Here is an example.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;ShipmentTableModel&lt;/span&gt; &lt;span class='kd'&gt;extends&lt;/span&gt; &lt;span class='n'&gt;AbstractTableModel&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt;&lt;span class='o'&gt;[]&lt;/span&gt; &lt;span class='n'&gt;names&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;Shipment Origin&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;Shipment Destination&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;Tax&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;};&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt;&lt;span class='o'&gt;[]&lt;/span&gt; &lt;span class='n'&gt;width&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;&lt;span class='mi'&gt;40&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='mi'&gt;40&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='mi'&gt;40&lt;/span&gt;&lt;span class='o'&gt;};&lt;/span&gt;
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt;&lt;span class='o'&gt;[]&lt;/span&gt; &lt;span class='n'&gt;editable&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;&lt;span class='kc'&gt;false&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='kc'&gt;false&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='kc'&gt;true&lt;/span&gt;&lt;span class='o'&gt;};&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;getName&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;names&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;];&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;getWidth&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;width&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;];&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='nf'&gt;isEditable&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;editable&lt;/span&gt;&lt;span class='o'&gt;[&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;];&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;Class&lt;/span&gt; &lt;span class='nf'&gt;getColumnClass&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;switch&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;Integer&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;2&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;Boolean&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+            &lt;span class='k'&gt;default&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;Object&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;                           
+    &lt;span class='o'&gt;}&lt;/span&gt;
+    
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='nf'&gt;validate&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;Object&lt;/span&gt; &lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;switch&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; 
+                 &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;aValue&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+                 &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;aValue&lt;/span&gt; &lt;span class='o'&gt;!=&lt;/span&gt; &lt;span class='kc'&gt;null&lt;/span&gt; &lt;span class='o'&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class='o'&gt;!&lt;/span&gt;&lt;span class='n'&gt;aValue&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;equals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;1&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt;
+                &lt;span class='n'&gt;Integer&lt;/span&gt; &lt;span class='n'&gt;intValue&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;Integer&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+                &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;intValue&lt;/span&gt; &lt;span class='o'&gt;!=&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+            &lt;span class='k'&gt;case&lt;/span&gt; &lt;span class='mi'&gt;3&lt;/span&gt;&lt;span class='o'&gt;:&lt;/span&gt;
+            &lt;span class='k'&gt;default&lt;/span&gt;&lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='kc'&gt;true&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This class for sure violates the single responsibility principle. The name of the class says that it is a model class but it is doing a lot more than that. Our TableModel class feeds in data to a few other classes in the system. It is easy to figure of what kind of data those other classes are looking for. Looks like dependent classes are mainly concerned about properties of individual columns in this model. Do we see any concepts in this class which are repeated and can be extracted out? Yes, all the methods in this class take in a column index and give data back for that index. I think there is a &lt;code&gt;Column&lt;/code&gt; class hiding somewhere. Let us start with something simple. We can extract out properties of a column in an interface and have our concrete columns implement that interface. I personally do not like use of interfaces for such needs but we will slowly move in the right direction. We do not want to get caught up in generalizing everything all at once.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;interface&lt;/span&gt; &lt;span class='nc'&gt;Column&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+    &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;getName&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+    
+    &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;getWidth&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+    
+    &lt;span class='n'&gt;Class&lt;/span&gt; &lt;span class='nf'&gt;getColumnClass&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+    
+    &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='nf'&gt;validate&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;and our model class can now just take a list of columns and operate on them and can be possibly renamed to be &lt;code&gt;TableModel&lt;/code&gt; instead of &lt;code&gt;ShipmentTableModel&lt;/code&gt; since it is generic enough to take different kinds of columns and delegate the tasks to concrete column classes.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TableModel&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Column&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;TableModel&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Column&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;this&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;columns&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;getName&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;get&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;getName&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;getWidth&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;get&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;getWidth&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='nf'&gt;isEditable&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;get&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;isEditable&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;Class&lt;/span&gt; &lt;span class='nf'&gt;getColumnClass&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;get&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;getColumnClass&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;boolean&lt;/span&gt; &lt;span class='nf'&gt;validate&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;Object&lt;/span&gt; &lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;columns&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;get&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;columnIndex&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;validate&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;value&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That looks much cleaner with clear separation of responsibilities. Model is no longer responsible for creating Column concepts and doing anything but delegating work to the actual column classes. More importantly, if we have a need to create a new table for some other purpose, no new model needs to be created. This &lt;code&gt;TableModel&lt;/code&gt; class can be reused after constructing the appropriate columns from column factories. Separation of concerns in this case is also allowing us to see other possibilities which we will have a look in the coming blogs. Thanks :)&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Java enums - Code as Data?</title>
+   <link href="http://piyush0101.github.com/2013/03/02/java-enums---code-as-data"/>
+   <updated>2013-03-02T00:00:00-06:00</updated>
+   <id>http://piyush0101.github.com/2013/03/02/java-enums---code-as-data</id>
+   <content type="html">&lt;p&gt;Smart enums in Java are a concept that probably are the closest to the concept of higher order functions in functional programming languages such as Haskell, Scala, Clojure, ML etc. One major advantage of higher order functions is that you can use them as data and pass around the system and execute them wherever you want to. They are more convenient than anonymous inner classes and less verbose. Before going further, this post is in no way to defend the shortcomings of the java programming language. Java language has started to show its age with the rise of more powerful, expressive languages like Scala and Clojure which are slowly but surely making their way into the mainstream.&lt;/p&gt;
+
+&lt;p&gt;There is a pattern in java which I feel is really useful but have not seen it being used a lot. The pattern of smart enums where you can easily pass executable enums around and even save them to a persistent store as immutable data. Title of the post may not justify the non &lt;a href='http://en.wikipedia.org/wiki/Homoiconicity'&gt;homoiconicity&lt;/a&gt; of the java programming language. There is no way to do that kind of meta programming stuff that you can do in homoiconic languages like lisp. However, there is an introduction of the &amp;#8216;code as data&amp;#8217; philosophy on the JVM in Clojure. Anyways, coming back to the point. Anonymous inner classes are not the only way to emulate higher order functions in Java. Smart enums also make it possible in a lesser verbose manner. I will give a short example on how:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;enum&lt;/span&gt; &lt;span class='n'&gt;TweetFilter&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+    &lt;span class='n'&gt;UPPERCASE&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;toUpperCase&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;},&lt;/span&gt;
+
+    &lt;span class='n'&gt;LOWERCASE&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+          &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+              &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;toLowerCase&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+          &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;},&lt;/span&gt;
+
+    &lt;span class='n'&gt;PROFANITY&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;replaceAll&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;fucking&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;***&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;};&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;abstract&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is a very simple smart enum which can execute different filters on a string as needed. If you look at the bytecode of an enum like this, you would see that these are essentially abstract classes. That&amp;#8217;s why if you want your enum to have some behavior, you need to declare your abstract methods and override them in individual enums. Now, you can use your filters individually or compose them to form a chain of filters.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='n'&gt;Filter&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;UPPERCASE&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;smart enums are good!&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+&lt;span class='n'&gt;Filter&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;PROFANITY&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;Filter&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;UPPERCASE&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;smart enums are fucking awesome&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Whenever you are passing data/code around, it is always advisable to keep it immutable so that it is easy to reason about. Along the same lines, stateless smart enums are easier to work with! In the above example, we have enums with pure functions with no side effects. Since the enums we created are stateless, we do not really need to worry about serializability. Java enums are serializable by default. You need not extend/implement the Serializable interface to make them serializable. However, being stateless and not worrying about serializability may not be that simple. If the parameter to your enum method is a class then you do need to have that parameter class as Serializable. Since java String class is Serializable, we did not have to worry about it. So, you can easily use your smart enums over the wire too!&lt;/p&gt;
+
+&lt;p&gt;There is one more pattern with enums that I feel is immensely useful. Storing enums as data and constructing them back when needed. Suppose you have a requirement of showing some enumerable data on a UI in a human readable form. That data is shown as a column in some table. Clearly, our enum names above in the Filter enum are too cryptic to be shown to the user. In those cases, we would typically have a human understandable description attached with the enum.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;enum&lt;/span&gt; &lt;span class='n'&gt;TweetFilter&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+    &lt;span class='n'&gt;UPPERCASE&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;Uppercase Filter&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;toUpperCase&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;},&lt;/span&gt;
+
+    &lt;span class='n'&gt;LOWERCASE&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;Lowercase Filter&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+          &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+              &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;toLowerCase&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+          &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;},&lt;/span&gt;
+
+    &lt;span class='n'&gt;PROFANITY&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;Profanity Filter&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+        &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+            &lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;replaceAll&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;fucking&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;***&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+        &lt;span class='o'&gt;}&lt;/span&gt;
+    &lt;span class='o'&gt;};&lt;/span&gt;
+
+    &lt;span class='kd'&gt;private&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;description&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;stringValue&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+	&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;description&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+    &lt;span class='o'&gt;}&lt;/span&gt;
+
+    &lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;abstract&lt;/span&gt; &lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='nf'&gt;filter&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can see the striking similarity of enums with abstract classes here. Abstract methods of the enum are overridden by each enum while the concrete method &lt;code&gt;stringValue()&lt;/code&gt; is the part of the enum declaration.&lt;/p&gt;
+
+&lt;p&gt;There are a couple of advantages of this approach. Representation and code are loosely coupled. If business comes back saying they want to see something else as the description, it is really easy to change the description as opposed to refactoring code if we were using the &lt;code&gt;toString()&lt;/code&gt; method on the enum itself. Another advantage, very closely related with the one just mentioned, is that you can save your enums in the persistent store instead of saving the actual string representation. As we mentioned earlier, if this representation was part of a table column in a UI, you would probably need to store it somewhere to populate the table with data on demand. It is really easy to re construct your enums. If your Filter enum is saved to a persistent storage as &lt;code&gt;PROFANITY&lt;/code&gt;, you can easily construct it in your code as:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;&lt;span class='n'&gt;Filter&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;valueOf&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;PROFANITY&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;and there you have the PROFANITY filter in your hand. You can use it to display data in the table or execute behavior that is defined with the enum. Here we have an executable data!&lt;/p&gt;
+
+&lt;p&gt;One wise philosophy in software development is to keep &lt;strong&gt;temporal coupling&lt;/strong&gt; really low in your code. This is kind of leaning towards that.&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>The Fountainhead</title>
+   <link href="http://piyush0101.github.com/philosophy/2013/02/17/the-fountainhead"/>
+   <updated>2013-02-17T00:00:00-06:00</updated>
+   <id>http://piyush0101.github.com/philosophy/2013/02/17/the-fountainhead</id>
+   <content type="html">&lt;p&gt;I just finished reading The Fountainhead by Ayn Rand. A philosophical fiction that stresses on integrity, individualism, creativity, selfishness (a very different perspective), egotism and man worship. A very different view point on altruism, self sacrifice and all the things that make a man a second hander. I made several notes and highlighted phrases, sections which I liked.&lt;/p&gt;
+
+&lt;p&gt;Inspired and motivated to make the world around me as the world presented in The Fountainhead.&lt;/p&gt;
+
+&lt;p&gt;Ayn Rand at the begining of the book talking about the bond with her husband: &lt;strong&gt;&amp;#8220;The essence of the bond between us is the fact that neither of us has ever wanted or been tempted to settle for anything less than the world presented in The Fountainhead. We never will&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;One cannot give up the world to those one despises&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Howard Roark when expelled from the college: &lt;strong&gt;&amp;#8220;I won&amp;#8217;t be back. I have nothing further to learn here&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;Men hate passion, any great passion&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;To ask nothing. To expect nothing. To depend on nothing&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Howard Roark to the depressed Steven Mallory: &lt;strong&gt;&amp;#8220;I think you&amp;#8217;re the best sculptor we&amp;#8217;ve got. I think it, because your fingers are not what men are, but what men could be - and should be&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;When you see a man casting pearls without getting even a pork chop in return - it is not against the swine that you feel indignation&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Howard Roark on Steven Mallory: &lt;strong&gt;&amp;#8220;But don&amp;#8217;t they know that if suffering could be measured, there&amp;#8217;s more suffering in Steven Mallory when he can&amp;#8217;t do the work he wants to do&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;People want nothing but mirrors around them. To reflect them while they&amp;#8217;re reflecting too&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;It&amp;#8217;s said that the worst thing once can do to a man is to kill his self respect. But that&amp;#8217;s not true. Self respect is something that can&amp;#8217;t be killed&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;It takes two to make every great career: the man who is great and the man - almost rarer - who is great enough to see greatness and say so&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;We live in our minds, and existence is the attempt to bring that life into physical reality, to state it in gesture and form.&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;To get things done, you must love the doing, not the secondary consequences. The work, not the people. Your own action, not any possible object of your charity&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;A truly selfish man cannot be affected by the approval of others. He doesn&amp;#8217;t need it&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&amp;#8220;You can fake virtue for an audience. You can&amp;#8217;t fake it in your own eyes. Your ego is your strictest judge&amp;#8221;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Howard Roark - Architect &lt;strong&gt;&amp;#8220;I wished to come here and say that integrity of a man&amp;#8217;s creative work is of greater importance that any charitable endeavor.&amp;#8221;&lt;/strong&gt;&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Feedback Loops - Short, Continuous and ?</title>
+   <link href="http://piyush0101.github.com/2013/01/15/feedback-loops---short-continuous-and-"/>
+   <updated>2013-01-15T00:00:00-06:00</updated>
+   <id>http://piyush0101.github.com/2013/01/15/feedback-loops---short-continuous-and-</id>
+   <content type="html">&lt;p&gt;I was working one friday afternoon at the &lt;strong&gt;Thought&lt;/strong&gt;Works Dallas office, remoting into the machine at the client site and pairing with a fellow developer. Internet connection speeds here in the United States are pretty amazing and it did not take long to connect to the remote machine and start coding in eclipse. This has happened to me before but I never thought much about it. Even the slightest of lag between a keystroke and the letter appearing on the display is slow feedback. I personally am not a very accurate typist, I make errors while typing but constantly looking on the screen to see what I typed, getting instantaneous feedback on whether it was correct or not helps me in fixing the problem quickly. Imagine if there was a delay of a second in this scenario i.e. when you hit a key and when the letter appeared on the screen. How inconvenient would that have been.&lt;/p&gt;
+
+&lt;p&gt;I am just curious and intrigued about the importance of efficient, streamlined feedback loops in our lives and professions. As a software developer, I have seen so many practices - &lt;a href='http://en.wikipedia.org/wiki/Fail-fast'&gt;fail fast&lt;/a&gt; systems, fail fast techniques, fail fast language features, &lt;a href='http://martinfowler.com/articles/continuousIntegration.html'&gt;continuous integration&lt;/a&gt;, &lt;a href='http://en.wikipedia.org/wiki/Continuous_delivery'&gt;continuous delivery&lt;/a&gt; and deployment, all of which have one common theme that they strive towards. Short and continuous feedbacks. Figuring out problems sooner than later, finding issues in smaller deltas rather than mining them in a sea of changes. Similar to software development, other activities in our daily lives become much less stressful and streamlined if we consider involving short, continuous and honest feedbacks. How? I know it sounds preposterous but I will explain all of it below.&lt;/p&gt;
+
+&lt;p&gt;Since my profession is developing software and I do not know the nits and grits of other fields, I will take a plunge into software development and then discuss some stuff related to other activities pertaining to our daily lives.&lt;/p&gt;
+
+&lt;h2 id='software_development'&gt;Software Development&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href='http://en.wikipedia.org/wiki/Kent_Beck'&gt;Kent Beck&lt;/a&gt;, who is the pioneer of the &lt;a href='http://en.wikipedia.org/wiki/Test-driven_development'&gt;Test Driven Development&lt;/a&gt; technique and inventor of the &lt;a href='https://github.com/KentBeck/junit'&gt;JUnit&lt;/a&gt; framework says that he just rediscovered the idea. &lt;strong&gt;&amp;#8220;The original description of TDD was in an ancient book about programming. It said you take the input tape, manually type in the output tape you expect, then program until the actual output tape matches the expected output&amp;#8221;&lt;/strong&gt;. The most modest of man that he is, I would still say that real innovations come from smart people making the most obvious decisions. What I always feel is having a formal name for the technique and having a structure around it always helps the wider community to understand and follow it. It looks like TDD had been around but having a formal name, techniques and tools around it helped the software development community see the real benefits of it.&lt;/p&gt;
+
+&lt;p&gt;There are several ideas that evolve while developing software with TDD. I just want to lay an emphasis on the feedbacks. TDD is an amazing technique to enable short and continuous feedback loops. It helps you evolve your design in a non legacy manner, gives you instant feedback on the algorithms that you are writing and makes sure that as you evolve your software to a more complex beast, you are not breaking the existing pieces. So far so good! However, TDD alone is not good enough to have honest feedback. I would say that TDD is a core technique which still requires tools around it to make it more effective and powerful. Since I am working these days on a &lt;a href='http://hackerboss.com/legacy-code/'&gt;legacy&lt;/a&gt; codebase, the first example that comes to my mind is about doing TDD with legacy code. Couple of days back, I was fixing a minor defect. I wanted to have a few tests around the culprit method. After writing a few tests with my pair, we thought we were done. We have covered this method and are good to refactor. I did not feel safe for two reasons, (i) I didn&amp;#8217;t understand the domain completely, (ii) our assertions were all green but I still didn&amp;#8217;t know if we missed something. I wanted a quick feedback to feel free and safe. I remembered using an integrated code coverage tool with IntelliJ and wished there was something similar for eclipse. Fortunately, there are &lt;a href='http://emma.sourceforge.net/'&gt;Emma&lt;/a&gt; and &lt;a href='http://cobertura.sourceforge.net/'&gt;Cobertura&lt;/a&gt; plugins for eclipse. Here&amp;#8217;s how we benefited from it. Quick, continuous feedbacks (though emma eclipse plugin takes much longer to gather coverage statistics than the integrated IntelliJ coverage tools). Still, it was short enough.&lt;/p&gt;
+
+&lt;p&gt;Starting with a short example and then I will show a more complex scenario when these kinds of feedbacks are immensely useful.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt='partial line coverage' src='../../../../assets/images/partial-line-coverage.png' /&gt;&lt;/p&gt;
+
+&lt;p&gt;Green is for &amp;#8216;full line coverage&amp;#8217; while Yellow is for &amp;#8216;partial line coverage&amp;#8217;. There&amp;#8217;s one line in the code above that is marked as yellow. It is not difficult to figure out why that line is partially covered. There is a branch in the code and it looks like that in our tests, we have covered only one branch. This screenshot is from IntelliJ using the built in IntelliJ code coverage tool. The emma eclipse plugin clearly said &amp;#8220;1 branch out of 2 missed&amp;#8221; along with highlighting the yellow line. In this particular instance, it does not look like an instant feedback is providing anything other than just &lt;strong&gt;Staring&lt;/strong&gt; at you and asking to be fixed. &amp;#8220;Sometimes staring at the code is better than using anything else&amp;#8221;.&lt;/p&gt;
+
+&lt;p&gt;Here is a slightly more complex example. You do not always get the pleasure of dealing with coherent, small methods in legacy code. Those are the times when it is really important to make use of relevant tools and techniques.&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt='partial line coverage subtle' src='../../../../assets/images/partial-subtle.png' /&gt;&lt;/p&gt;
+
+&lt;p&gt;I could not get as complex as I would have liked to but you can see the subtleties here. A boolean that is returned from inside the loop is also a default return value in case control does not go at all inside the for loop. This example is still simple but I have seen cases where multiple domain objects are involved in making decisions in a single method and that&amp;#8217;s when it is really hard to sense safety. I find these instant feedback given by these tools to be amazingly useful in those cases. It is easy to overlook branches and complex subtleties in your tests. Not because you are less smart, not because you are less careful, but only because you may not be getting short, continuous and honest feedbacks.&lt;/p&gt;
+
+&lt;p&gt;Teams integrate code coverage tools with their continuous integration builds and see the coverage trends with time. A good approach at a macro level but having a coverage tool integrated with your development environment feeds back and enables smart decision making while actively developing. Priceless!&lt;/p&gt;
+
+&lt;p&gt;&lt;a href='http://en.wikipedia.org/wiki/Fail-fast'&gt;Fail fast&lt;/a&gt; systems, techniques, language features help in shortening the feedback loops in the sense that they immediately report any failure condition that is likely to lead to failure. When you are designing/developing big systems or features, this is a very useful technique. Some fail fast language features such as fail fast iterators which do not allow collections to be modified in two different ways while iterating through them prohibit flawed operations that are likely to lead to failure by giving early feedbacks and keeping the feedback loops really short. For instance, if you are programming in Java, the JVM would throw a &lt;code&gt;ConcurrentModificationException&lt;/code&gt; if you are trying to do an operation which involves reading from a collection and writing to it in the same iterator.&lt;/p&gt;
+
+&lt;p&gt;As I gave other examples earlier, continuous integration, continuous delivery were designed with the same basic principle. Having talked about techniques that facilitate short, continuous and honest feedback loops, I wanted to take a step back to talk more about the properties of good feedback loops themselves.&lt;/p&gt;
+
+&lt;p&gt;It is very important to design your feedback loops with the right and relevant things feeding into the loop. Also, it is equally important to extract the most useful information as a result of the feedback process. In our TDD, example, I said that emma eclipse plugin along with highlighting partially covered lines in yellow, also clearly states the reason for partial coverage. This is an example of a good output from feedback loop. To get quality information out, you need to make sure you have correct &lt;strong&gt;things&lt;/strong&gt; feeding into the loop. It would be out of scope of this blog to go into too much detail about what can be considered &lt;strong&gt;correct&lt;/strong&gt; feed into a feedback loop. Getting your feedback loops right may not be an overnight process. It evolves continuously with good feedback. A vicious circle! But knowing the importance of them and paying proper attention to them in development strategies can provide some really good insights and results.&lt;/p&gt;
+
+&lt;h2 id='life_activities'&gt;Life Activities&lt;/h2&gt;
+
+&lt;p&gt;I found a new interest in running last year. Initially, when I started, I could not run for 5 minutes. I would be out of breath and my legs would start hurting. But once you decide to &lt;a href='http://www.aaronsw.com/weblog/dalio'&gt;lean into the pain&lt;/a&gt;, you tend to overcome the most difficult of challenges. I started setting small goals and tried to overcome them. After a while, I realized that I am not pushing myself enough. I was doing 2.3-2.4 miles in 25-30 minutes comfortably. I sure was going into a comfort zone. I wanted to increase my speed and increase my mileage. However, getting a feedback about your pace/speed at the end of your run is a long, inefficient feedback loop. I downloaded a &lt;a href='http://runkeeper.com/home'&gt;runkeeper&lt;/a&gt; app on my phone. The app comes with a 5 min feedback by default. I am sure somebody might have put a good thought on 5 minutes. I feel 5 minute feedback loop in this case to be an optimal one.&lt;/p&gt;
+
+&lt;p&gt;Getting a good feedback after every 5 minutes about my speed gives me a good idea on how good I am doing and how much do I need to push myself to accomplish my targets. My co ordinates feed into the loop and covered distance, average speed, average pace come as results every 5 minutes. I have found this loop to be extremely useful in the last one year.&lt;/p&gt;
+
+&lt;p&gt;My father is a long time diabetic patient. Long term diabetes has the tendency to deteriorate other organs of the body. So, it is really important to get yourself medically examined regularly, specially after a certain age. What he has been doing really well since last few years is having routine examinations. Examinations sometime result in no issues while at times they uncover some problems. Discovering problems in this way is good in the sense that you are discovering them early and often so they can be treated effectively at an early stage rather than when things have gone out of control. Another case of having efficient, short and continuous feedback loops.&lt;/p&gt;
+
+&lt;p&gt;I feel that if not everything then most of what you do should be backed by streamlined, short, continuous and honest feedback loops.&lt;/p&gt;
+
+&lt;p&gt;Enjoy!&lt;/p&gt;</content>
+ </entry>
+ 
+ <entry>
+   <title>Easy refactoring with Mockito</title>
+   <link href="http://piyush0101.github.com/2013/01/13/easy-refactoring-with-mockito"/>
+   <updated>2013-01-13T00:00:00-06:00</updated>
+   <id>http://piyush0101.github.com/2013/01/13/easy-refactoring-with-mockito</id>
+   <content type="html">&lt;p&gt;I aim to provide here a few insights into dealing with difficult to test code. Most of the time, when dealing with &lt;a href='http://hackerboss.com/legacy-code/'&gt;legacy code&lt;/a&gt;, you come across wildly tangled code. Dependencies are not well defined which results in tightly coupled, difficult to test code. Legacy systems which are running since a decade, have evolved in a strictly deadline driven, its-ugly-but-it-works kind of environment are usually not very easy to fix overnight.&lt;/p&gt;
+
+&lt;p&gt;The best kind of system that is easily testable is the one which follows good inversion of control/dependency injection patterns. Here are a couple of good articles about &lt;a href='http://paulhammant.com/blog/what-brought-me-to-inversion-of-control-in-the-first-place.html'&gt;Inversion of Control&lt;/a&gt; and &lt;a href='http://martinfowler.com/articles/injection.html'&gt;Dependency Injection&lt;/a&gt; from Paul Hammant and Martin Fowler.&lt;/p&gt;
+
+&lt;p&gt;So, as I said, systems which evolve over the course of many years have to be dealt with care and made testable while taking small steps at a time. This blog focusses on some hard to test patterns that I have seen myself/others struggling to make testable over the course of last year or so. Examples here are very simple and may not show the real trouble you have to go through when presented with a legacy system but that&amp;#8217;s the intention. I have tried to extract out those patterns in small examples so that you may get the idea which probably gives you a hint to go in a direction which is more feasible at a given point in time/refactoring.&lt;/p&gt;
+
+&lt;p&gt;As we know that tests are really important and unit tests should be the most number of tests in your &lt;a href='http://martinfowler.com/bliki/TestPyramid.html'&gt;Test Pyramid&lt;/a&gt; Working with Legacy Code is not easy, you never know what you are changing and more importantly what you are breaking. It is very important to have a safety net when modifying Legacy Code. To get that safety net, you need to write tests and for writing tests, you need to break dependencies. Michael Feathers&amp;#8217; excellent book Working Effectively with Legacy Code explains various dependency breaking techniques in detail. If you are really curious about the challenges with Legacy Code, I would highly recommend reading that book.&lt;/p&gt;
+
+&lt;p&gt;I am taking a slightly lighter, basic route with basic dependency breaking techniques explained with &lt;a href='http://code.google.com/p/mockito/'&gt;Mockito&lt;/a&gt;. Mockito is a wonderful mocking/stubbing library which helps you test your refactoring very easily. Dependencies that I describe here are classified in following categories:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Inherited Dependency&lt;/strong&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;ThinAir Dependency&lt;/strong&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Static Dependency&lt;/strong&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;strong&gt;Inverted/Injected Dependency&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The last one is the ideal case and the rest are a few we can refactor in incremental steps to reach the final goal of dependency injection. Refactoring from the worst kind of dependency tangle (inherited dependency) to Dependency Injection may (and is often not) not be a one step process. First goal is to make code testable and then continuously improve.&lt;/p&gt;
+
+&lt;p&gt;Now, let&amp;#8217;s get take a deep dive into these problems and a few possible solutions.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;AbstractTweetService&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;protected&lt;/span&gt; &lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;AbstractTweetService&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;tweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;TweetDownloader&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadTweets&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;persistTweets&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;TweetPersister&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;persistTweets&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt; 
+	&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+
+	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TweetCountService&lt;/span&gt; &lt;span class='kd'&gt;extends&lt;/span&gt; &lt;span class='n'&gt;AbstractTweetService&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;TweetCountService&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='kd'&gt;super&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;countTweetsFrom&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+			&lt;span class='k'&gt;for&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+				&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;getUser&lt;/span&gt;&lt;span class='o'&gt;().&lt;/span&gt;&lt;span class='na'&gt;equals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;))&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+					&lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;++;&lt;/span&gt;
+				&lt;span class='o'&gt;}&lt;/span&gt;
+			&lt;span class='o'&gt;}&lt;/span&gt;
+			&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Note that there are several things going wrong here other than just inheritance. Inheritance is just making the matters worse. Couple of things I really don&amp;#8217;t like with this kind of code (with inheritance) is that it hides dependencies, and hides details. There&amp;#8217;s no way of just reading the TweetCountService class and figuring out where is it getting the tweets from. And anyways, there&amp;#8217;s no clear contract of what this class is supposed to do. Ideal way of solving this problem would be to replace inheritance with composition but that may not always be possible due to a lot of factors like time, deadlines, deeply tangled code etc. What we need to do in those cases is to make the minimum changes that help us in making the code testable. We can take a faster route and get some tests in place and then make more pervasive changes. Michael Feathers has done an amazing job in conveying the idea of taking small steps at a time while refactoring and writing tests in legacy code.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s the code after minimal amount of refactoring. Just enough to make the code testable.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;AbstractTweetService&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+		&lt;span class='kd'&gt;protected&lt;/span&gt; &lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;AbstractTweetService&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;TweetDownloaderHelper&lt;/span&gt; &lt;span class='n'&gt;downloaderHelper&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;tweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;downloaderHelper&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadTweets&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;persistTweets&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;TweetPersister&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;persistTweets&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TweetCountService&lt;/span&gt; &lt;span class='kd'&gt;extends&lt;/span&gt; &lt;span class='n'&gt;AbstractTweetService&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='nf'&gt;TweetCountService&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;TweetDownloaderHelper&lt;/span&gt; &lt;span class='n'&gt;downloaderHelper&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='kd'&gt;super&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;downloaderHelper&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+ 
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;countTweetsFrom&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+			&lt;span class='k'&gt;for&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+				&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;getUser&lt;/span&gt;&lt;span class='o'&gt;().&lt;/span&gt;&lt;span class='na'&gt;equals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;))&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+					&lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;++;&lt;/span&gt;
+				&lt;span class='o'&gt;}&lt;/span&gt;
+			&lt;span class='o'&gt;}&lt;/span&gt;	
+			&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We did not get rid of the inheritance hierarchy, since that would have been a pervasive change and we did not have any tests to start with. Michael Feathers has a good section about constructors doing too much work and how to parameterize constructors to break the dependencies. This is a similar technique that we use here. We create a TweetDownloaderHelper and pass it into the newly created constructor for AbstractTweetService. Since the constructor is parameterized, we can now easily mock the dependency on TweetDownloaderHelper. Mockito uses &lt;a href='http://asm.ow2.org/'&gt;asm&lt;/a&gt; and &lt;a href='http://cglib.sourceforge.net/'&gt;cglib&lt;/a&gt; libraries to generate byte code at runtime. It subclasses the mocked class on which you can then set expectations. This is an object &lt;a href='http://www.informit.com/articles/article.aspx?p=359417&amp;amp;seqNum=3'&gt;seam&lt;/a&gt; that we identified but we need not Extract Interface and implement that interface with a fake object since mockito can do that work for us. However, if your development strategy is such that you want to identify link/object seams in the system which probably are dependent on external services, it would be really useful to extract interfaces and provide their stubbed/test implementations in your CI builds. Seams are really powerful! &lt;a href='http://www.springsource.org/'&gt;Spring&lt;/a&gt;can also help you in this strategy with its context based bean lookups. You can run your build with a production context (with all the required services) / test context (with fake implementations of all the services) / partial contexts (with some of the services mocked). I recently used Spring to do this at one of our clients. We were integrating with an external service which we did not care for most of our tests. I could easily separate out the JNDI lookup implementation and a fake implementation with Spring and created separate contexts for both of them. Rest everything worked like magic! Again, while working with legacy code, always keep an eye out for &lt;a href='http://www.informit.com/articles/article.aspx?p=359417&amp;amp;seqNum=3'&gt;seams&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;And, here&amp;#8217;s a test for our refactoring. Uses mockito to mock the dependency.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TweetCountServiceInheritanceTest&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+		&lt;span class='nd'&gt;@Test&lt;/span&gt;
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;shouldReturnZeroTweetsForAUserWithNoTweets&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;TweetDownloaderHelper&lt;/span&gt; &lt;span class='n'&gt;downloadHelper&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;mock&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;TweetDownloaderHelper&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='n'&gt;TweetCountService&lt;/span&gt; &lt;span class='n'&gt;tweetCountService&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;TweetCountService&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;downloadHelper&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet1&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;piyush&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;mockito is awesome!&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet2&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;piyush&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;coding is my favorite stress buster!&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet3&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;kate&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;i love spying with mockito)&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;when&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;downloadHelper&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadTweets&lt;/span&gt;&lt;span class='o'&gt;()).&lt;/span&gt;&lt;span class='na'&gt;thenReturn&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;asList&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweet1&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;tweet2&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;tweet3&lt;/span&gt;&lt;span class='o'&gt;));&lt;/span&gt;
+
+			&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;tweetCountService&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;countTweetsFrom&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;cece&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;assertEquals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Other kinds of dependencies which infiltrate the code and make it really hard to test are static dependencies and thin air dependencies. Static dependencies for me are static method calls to a util/service class within some method. Static dependencies can come as global references, singletons or just plain static method calls. I generally use extract method and override refactoring to make this code more testable. One good thing about mockito is its support for partial mocks. You can &amp;#8216;spy&amp;#8217; on objects and mock only certain methods of the class. This is really powerful in the sense that in your test class you do not need to write boiler plate code of creating a class and overriding the methods that you need. I had wished for this convenience while testing with &lt;a href='http://www.easymock.org/EasyMock2_2_2_ClassExtension_Documentation.html'&gt;EasyMock&lt;/a&gt; and &lt;a href='http://www.unitils.org/'&gt;Unitils&lt;/a&gt;. Again, if you have to make methods protected instead of private, it may be worth looking back at the class to see how much work it is doing. It may be taking more responsibilities than it should. But remember, we are dealing with legacy code and improving legacy code overnight is not the easiest thing to do. Have a look at the test classes in the code for getting an idea on how to spy / partial mock classes.&lt;/p&gt;
+
+&lt;p&gt;ThinAir dependencies as I like to call them are the dependencies grabbed out of thin air in a constructor/method call usually by creating a new instance of a collaborator class. These again are hard to mock and hence hard to test. We use parameterize constructor/adapt parameter refactoring to break these dependencies. If you come across code like the following, you know you have this kind of problem:&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;	&lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;m1&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+		&lt;span class='o'&gt;...&lt;/span&gt;
+		&lt;span class='n'&gt;TweetDownloader&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;TweetDownloader&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt; &lt;span class='c1'&gt;// thin air dependency&lt;/span&gt;
+		&lt;span class='o'&gt;...&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+
+	&lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;m2&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+		&lt;span class='o'&gt;...&lt;/span&gt;
+		&lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;TweetDownloader&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadTweets&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt; &lt;span class='c1'&gt;// static dependency&lt;/span&gt;
+		&lt;span class='o'&gt;...&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Its like grabbing a dependency out of thin air! Ideal solution would be to inject dependencies, but tests first and then more pervasive refactoring is an implied rule in legacy.&lt;/p&gt;
+
+&lt;p&gt;Please look at the example code to get an idea of how to use mockito with these kinds of problems. Code below is code after refactoring.&lt;/p&gt;
+&lt;div class='highlight'&gt;&lt;pre&gt;&lt;code class='java'&gt;	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TweetCountService&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='nf'&gt;countTweetsFrom&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;String&lt;/span&gt; &lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;TweetDownloader&lt;/span&gt; &lt;span class='n'&gt;downloader&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;createTweetDownloader&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+			&lt;span class='n'&gt;TweetPersister&lt;/span&gt; &lt;span class='n'&gt;persister&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;createTweetPersister&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+			&lt;span class='n'&gt;List&lt;/span&gt;&lt;span class='o'&gt;&amp;lt;&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;&amp;gt;&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;downloader&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadData&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+			&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+			&lt;span class='k'&gt;for&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet&lt;/span&gt; &lt;span class='o'&gt;:&lt;/span&gt; &lt;span class='n'&gt;tweets&lt;/span&gt;&lt;span class='o'&gt;)&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+				&lt;span class='k'&gt;if&lt;/span&gt; &lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweet&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;getUser&lt;/span&gt;&lt;span class='o'&gt;().&lt;/span&gt;&lt;span class='na'&gt;equals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;))&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+					&lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;++;&lt;/span&gt;
+				&lt;span class='o'&gt;}&lt;/span&gt;
+			&lt;span class='o'&gt;}&lt;/span&gt;
+			&lt;span class='n'&gt;persister&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;persistTweets&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;user&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;;&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+
+		&lt;span class='kd'&gt;protected&lt;/span&gt; &lt;span class='n'&gt;TweetPersister&lt;/span&gt; &lt;span class='nf'&gt;createTweetPersister&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='nf'&gt;TweetPersister&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+
+		&lt;span class='kd'&gt;protected&lt;/span&gt; &lt;span class='n'&gt;TweetDownloader&lt;/span&gt; &lt;span class='nf'&gt;createTweetDownloader&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='k'&gt;return&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='nf'&gt;TweetDownloader&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+
+
+	&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kd'&gt;class&lt;/span&gt; &lt;span class='nc'&gt;TweetCountServiceTestThinAir&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+
+		&lt;span class='nd'&gt;@Test&lt;/span&gt;
+		&lt;span class='kd'&gt;public&lt;/span&gt; &lt;span class='kt'&gt;void&lt;/span&gt; &lt;span class='nf'&gt;shouldReturnZeroTweetsForAPersonWithoutAnyTweets&lt;/span&gt;&lt;span class='o'&gt;()&lt;/span&gt; &lt;span class='o'&gt;{&lt;/span&gt;
+			&lt;span class='n'&gt;TweetCountService&lt;/span&gt; &lt;span class='n'&gt;tweetCountService&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;spy&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;TweetCountService&lt;/span&gt;&lt;span class='o'&gt;());&lt;/span&gt;
+			&lt;span class='n'&gt;TweetDownloader&lt;/span&gt; &lt;span class='n'&gt;downloader&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;mock&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;TweetDownloader&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='n'&gt;TweetPersister&lt;/span&gt; &lt;span class='n'&gt;persister&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;mock&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;TweetPersister&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;class&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet1&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;piyush&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;mockito is awesome!&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+			&lt;span class='n'&gt;Tweet&lt;/span&gt; &lt;span class='n'&gt;tweet2&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='k'&gt;new&lt;/span&gt; &lt;span class='n'&gt;Tweet&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;kate&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='s'&gt;&amp;quot;i love spying with mockito ;)&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;doReturn&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;downloader&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;when&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweetCountService&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;createTweetDownloader&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+			&lt;span class='n'&gt;doReturn&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;persister&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;when&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweetCountService&lt;/span&gt;&lt;span class='o'&gt;).&lt;/span&gt;&lt;span class='na'&gt;createTweetPersister&lt;/span&gt;&lt;span class='o'&gt;();&lt;/span&gt;
+
+			&lt;span class='n'&gt;when&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;downloader&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;downloadData&lt;/span&gt;&lt;span class='o'&gt;()).&lt;/span&gt;&lt;span class='na'&gt;thenReturn&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;asList&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='n'&gt;tweet1&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;tweet2&lt;/span&gt;&lt;span class='o'&gt;));&lt;/span&gt;
+
+			&lt;span class='kt'&gt;int&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt; &lt;span class='o'&gt;=&lt;/span&gt; &lt;span class='n'&gt;tweetCountService&lt;/span&gt;&lt;span class='o'&gt;.&lt;/span&gt;&lt;span class='na'&gt;countTweetsFrom&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='s'&gt;&amp;quot;cece&amp;quot;&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+
+			&lt;span class='n'&gt;assertEquals&lt;/span&gt;&lt;span class='o'&gt;(&lt;/span&gt;&lt;span class='mi'&gt;0&lt;/span&gt;&lt;span class='o'&gt;,&lt;/span&gt; &lt;span class='n'&gt;numberOfTweets&lt;/span&gt;&lt;span class='o'&gt;);&lt;/span&gt;
+		&lt;span class='o'&gt;}&lt;/span&gt;
+	&lt;span class='o'&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This was a very simple approach showing very simple examples of some not so good patterns you find in code. Even when starting on a green field project, make sure the system evolves in a non legacy manner. Write tests, follow TDD and see the results. Code evolves a lot better!&lt;/p&gt;
+
+&lt;p&gt;Enjoy!&lt;/p&gt;</content>
+ </entry>
+ 
+ 
+</feed>

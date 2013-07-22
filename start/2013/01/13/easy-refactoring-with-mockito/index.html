@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      
+        Easy refactoring with Mockito - 
+      
+      Piyush Srivastava's Blog
+    </title>
+    
+    <meta name="author" content="Piyush Srivastava">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <script src="/assets/themes/hooligan/js/jquery.min.js"></script>
+    <script src="/assets/themes/hooligan/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/hooligan/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" href="/assets/themes/hooligan/css-social-buttons/css/zocial.stripped.css" />
+    <link href="/assets/themes/hooligan/css/pygments.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/hooligan/css/darkstrap.css" rel="stylesheet" type="text/css" media="all">    
+    <link href="/assets/themes/hooligan/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    
+    <!-- fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>      
+
+
+          <a class="brand" href="/">Piyush Srivastava's Blog</a>
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              
+              
+              
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+            </ul>
+            <ul class="nav pull-right social visible-desktop">
+              <li class="divider-vertical"></li>
+              
+                <li>
+                  <a href="https://www.github.com/piyush0101" class="zocial github icon" target="_blank">
+                    <span class="hidden-desktop">Github</a>
+                  </a>
+                </li>
+              
+              
+                <li>
+                  <a href="https://profiles.google.com/" class="zocial googleplus icon" target="_blank">
+                    <span class="hidden-desktop">Google+</a>
+                  </a>
+                </li>
+                  
+              
+                <li>
+                  <a href="http://www.twitter.com/piyush0101" class="zocial twitter icon" target="_blank">
+                  <span class="hidden-desktop">Twitter</a>
+                  </a>
+                </li>
+                                        
+              
+                <li>
+                  <a href="http://www.facebook.com/piyush0101" class="zocial facebook icon" target="_blank">
+                    <span class="hidden-desktop">Facebook</a>
+                  </a>
+                </li>
+                         
+              
+                <li>
+                  <a href="http://www.linkedin.com/in/http://linkedin.com/pub/piyush-srivastava/b/306/a12/" class="zocial linkedin icon" target="_blank">
+                    <span class="hidden-desktop">LinkedIn</a>
+                  </a>
+                </li>
+                                  
+              
+                <li>
+                  <a href="http://feeds.feedburner.com/feedname" class="zocial rss icon" target="_blank">
+                    <span class="hidden-desktop">FeedBurner</a>
+                  </a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        
+<div class="page-header">
+  <h1>
+    Easy refactoring with Mockito 
+    
+      <small>being careful doesn't help if you don't have necessary tools and techniques</small>
+    
+  </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>I aim to provide here a few insights into dealing with difficult to test code. Most of the time, when dealing with <a href='http://hackerboss.com/legacy-code/'>legacy code</a>, you come across wildly tangled code. Dependencies are not well defined which results in tightly coupled, difficult to test code. Legacy systems which are running since a decade, have evolved in a strictly deadline driven, its-ugly-but-it-works kind of environment are usually not very easy to fix overnight.</p>
+
+<p>The best kind of system that is easily testable is the one which follows good inversion of control/dependency injection patterns. Here are a couple of good articles about <a href='http://paulhammant.com/blog/what-brought-me-to-inversion-of-control-in-the-first-place.html'>Inversion of Control</a> and <a href='http://martinfowler.com/articles/injection.html'>Dependency Injection</a> from Paul Hammant and Martin Fowler.</p>
+
+<p>So, as I said, systems which evolve over the course of many years have to be dealt with care and made testable while taking small steps at a time. This blog focusses on some hard to test patterns that I have seen myself/others struggling to make testable over the course of last year or so. Examples here are very simple and may not show the real trouble you have to go through when presented with a legacy system but that&#8217;s the intention. I have tried to extract out those patterns in small examples so that you may get the idea which probably gives you a hint to go in a direction which is more feasible at a given point in time/refactoring.</p>
+
+<p>As we know that tests are really important and unit tests should be the most number of tests in your <a href='http://martinfowler.com/bliki/TestPyramid.html'>Test Pyramid</a> Working with Legacy Code is not easy, you never know what you are changing and more importantly what you are breaking. It is very important to have a safety net when modifying Legacy Code. To get that safety net, you need to write tests and for writing tests, you need to break dependencies. Michael Feathers&#8217; excellent book Working Effectively with Legacy Code explains various dependency breaking techniques in detail. If you are really curious about the challenges with Legacy Code, I would highly recommend reading that book.</p>
+
+<p>I am taking a slightly lighter, basic route with basic dependency breaking techniques explained with <a href='http://code.google.com/p/mockito/'>Mockito</a>. Mockito is a wonderful mocking/stubbing library which helps you test your refactoring very easily. Dependencies that I describe here are classified in following categories:</p>
+
+<ul>
+<li><strong>Inherited Dependency</strong></li>
+
+<li><strong>ThinAir Dependency</strong></li>
+
+<li><strong>Static Dependency</strong></li>
+
+<li><strong>Inverted/Injected Dependency</strong></li>
+</ul>
+
+<p>The last one is the ideal case and the rest are a few we can refactor in incremental steps to reach the final goal of dependency injection. Refactoring from the worst kind of dependency tangle (inherited dependency) to Dependency Injection may (and is often not) not be a one step process. First goal is to make code testable and then continuously improve.</p>
+
+<p>Now, let&#8217;s get take a deep dive into these problems and a few possible solutions.</p>
+<div class='highlight'><pre><code class='java'>	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>AbstractTweetService</span> <span class='o'>{</span>
+ 
+		<span class='kd'>protected</span> <span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Tweet</span><span class='o'>&gt;</span> <span class='n'>tweets</span><span class='o'>;</span>
+ 
+		<span class='kd'>public</span> <span class='nf'>AbstractTweetService</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='n'>tweets</span> <span class='o'>=</span> <span class='n'>TweetDownloader</span><span class='o'>.</span><span class='na'>downloadTweets</span><span class='o'>();</span>
+		<span class='o'>}</span>
+ 
+		<span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>persistTweets</span><span class='o'>(</span><span class='n'>String</span> <span class='n'>user</span><span class='o'>,</span> <span class='kt'>int</span> <span class='n'>numberOfTweets</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='n'>TweetPersister</span><span class='o'>.</span><span class='na'>persistTweets</span><span class='o'>();</span>
+		<span class='o'>}</span> 
+	<span class='o'>}</span>
+ 
+
+	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TweetCountService</span> <span class='kd'>extends</span> <span class='n'>AbstractTweetService</span> <span class='o'>{</span>
+ 
+		<span class='kd'>public</span> <span class='nf'>TweetCountService</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='kd'>super</span><span class='o'>();</span>
+		<span class='o'>}</span>
+ 
+		<span class='kd'>public</span> <span class='kt'>int</span> <span class='nf'>countTweetsFrom</span><span class='o'>(</span><span class='n'>String</span> <span class='n'>user</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='kt'>int</span> <span class='n'>numberOfTweets</span> <span class='o'>=</span> <span class='mi'>0</span><span class='o'>;</span>
+			<span class='k'>for</span> <span class='o'>(</span><span class='n'>Tweet</span> <span class='n'>tweet</span> <span class='o'>:</span> <span class='n'>tweets</span><span class='o'>)</span> <span class='o'>{</span>
+				<span class='k'>if</span> <span class='o'>(</span><span class='n'>tweet</span><span class='o'>.</span><span class='na'>getUser</span><span class='o'>().</span><span class='na'>equals</span><span class='o'>(</span><span class='n'>user</span><span class='o'>))</span> <span class='o'>{</span>
+					<span class='n'>numberOfTweets</span><span class='o'>++;</span>
+				<span class='o'>}</span>
+			<span class='o'>}</span>
+			<span class='k'>return</span> <span class='n'>numberOfTweets</span><span class='o'>;</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+</code></pre></div>
+<p>Note that there are several things going wrong here other than just inheritance. Inheritance is just making the matters worse. Couple of things I really don&#8217;t like with this kind of code (with inheritance) is that it hides dependencies, and hides details. There&#8217;s no way of just reading the TweetCountService class and figuring out where is it getting the tweets from. And anyways, there&#8217;s no clear contract of what this class is supposed to do. Ideal way of solving this problem would be to replace inheritance with composition but that may not always be possible due to a lot of factors like time, deadlines, deeply tangled code etc. What we need to do in those cases is to make the minimum changes that help us in making the code testable. We can take a faster route and get some tests in place and then make more pervasive changes. Michael Feathers has done an amazing job in conveying the idea of taking small steps at a time while refactoring and writing tests in legacy code.</p>
+
+<p>Here&#8217;s the code after minimal amount of refactoring. Just enough to make the code testable.</p>
+<div class='highlight'><pre><code class='java'>	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>AbstractTweetService</span> <span class='o'>{</span>
+
+		<span class='kd'>protected</span> <span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Tweet</span><span class='o'>&gt;</span> <span class='n'>tweets</span><span class='o'>;</span>
+ 
+		<span class='kd'>public</span> <span class='nf'>AbstractTweetService</span><span class='o'>(</span><span class='n'>TweetDownloaderHelper</span> <span class='n'>downloaderHelper</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='n'>tweets</span> <span class='o'>=</span> <span class='n'>downloaderHelper</span><span class='o'>.</span><span class='na'>downloadTweets</span><span class='o'>();</span>
+		<span class='o'>}</span>
+ 
+		<span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>persistTweets</span><span class='o'>(</span><span class='n'>String</span> <span class='n'>user</span><span class='o'>,</span> <span class='kt'>int</span> <span class='n'>numberOfTweets</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='n'>TweetPersister</span><span class='o'>.</span><span class='na'>persistTweets</span><span class='o'>();</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+ 
+	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TweetCountService</span> <span class='kd'>extends</span> <span class='n'>AbstractTweetService</span> <span class='o'>{</span>
+ 
+		<span class='kd'>public</span> <span class='nf'>TweetCountService</span><span class='o'>(</span><span class='n'>TweetDownloaderHelper</span> <span class='n'>downloaderHelper</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='kd'>super</span><span class='o'>(</span><span class='n'>downloaderHelper</span><span class='o'>);</span>
+		<span class='o'>}</span>
+ 
+		<span class='kd'>public</span> <span class='kt'>int</span> <span class='nf'>countTweetsFrom</span><span class='o'>(</span><span class='n'>String</span> <span class='n'>user</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='kt'>int</span> <span class='n'>numberOfTweets</span> <span class='o'>=</span> <span class='mi'>0</span><span class='o'>;</span>
+			<span class='k'>for</span> <span class='o'>(</span><span class='n'>Tweet</span> <span class='n'>tweet</span> <span class='o'>:</span> <span class='n'>tweets</span><span class='o'>)</span> <span class='o'>{</span>
+				<span class='k'>if</span> <span class='o'>(</span><span class='n'>tweet</span><span class='o'>.</span><span class='na'>getUser</span><span class='o'>().</span><span class='na'>equals</span><span class='o'>(</span><span class='n'>user</span><span class='o'>))</span> <span class='o'>{</span>
+					<span class='n'>numberOfTweets</span><span class='o'>++;</span>
+				<span class='o'>}</span>
+			<span class='o'>}</span>	
+			<span class='k'>return</span> <span class='n'>numberOfTweets</span><span class='o'>;</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+</code></pre></div>
+<p>We did not get rid of the inheritance hierarchy, since that would have been a pervasive change and we did not have any tests to start with. Michael Feathers has a good section about constructors doing too much work and how to parameterize constructors to break the dependencies. This is a similar technique that we use here. We create a TweetDownloaderHelper and pass it into the newly created constructor for AbstractTweetService. Since the constructor is parameterized, we can now easily mock the dependency on TweetDownloaderHelper. Mockito uses <a href='http://asm.ow2.org/'>asm</a> and <a href='http://cglib.sourceforge.net/'>cglib</a> libraries to generate byte code at runtime. It subclasses the mocked class on which you can then set expectations. This is an object <a href='http://www.informit.com/articles/article.aspx?p=359417&amp;seqNum=3'>seam</a> that we identified but we need not Extract Interface and implement that interface with a fake object since mockito can do that work for us. However, if your development strategy is such that you want to identify link/object seams in the system which probably are dependent on external services, it would be really useful to extract interfaces and provide their stubbed/test implementations in your CI builds. Seams are really powerful! <a href='http://www.springsource.org/'>Spring</a>can also help you in this strategy with its context based bean lookups. You can run your build with a production context (with all the required services) / test context (with fake implementations of all the services) / partial contexts (with some of the services mocked). I recently used Spring to do this at one of our clients. We were integrating with an external service which we did not care for most of our tests. I could easily separate out the JNDI lookup implementation and a fake implementation with Spring and created separate contexts for both of them. Rest everything worked like magic! Again, while working with legacy code, always keep an eye out for <a href='http://www.informit.com/articles/article.aspx?p=359417&amp;seqNum=3'>seams</a>.</p>
+
+<p>And, here&#8217;s a test for our refactoring. Uses mockito to mock the dependency.</p>
+<div class='highlight'><pre><code class='java'>	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TweetCountServiceInheritanceTest</span> <span class='o'>{</span>
+
+		<span class='nd'>@Test</span>
+		<span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>shouldReturnZeroTweetsForAUserWithNoTweets</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='n'>TweetDownloaderHelper</span> <span class='n'>downloadHelper</span> <span class='o'>=</span> <span class='n'>mock</span><span class='o'>(</span><span class='n'>TweetDownloaderHelper</span><span class='o'>.</span><span class='na'>class</span><span class='o'>);</span>
+			<span class='n'>TweetCountService</span> <span class='n'>tweetCountService</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>TweetCountService</span><span class='o'>(</span><span class='n'>downloadHelper</span><span class='o'>);</span>
+
+			<span class='n'>Tweet</span> <span class='n'>tweet1</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>Tweet</span><span class='o'>(</span><span class='s'>&quot;piyush&quot;</span><span class='o'>,</span> <span class='s'>&quot;mockito is awesome!&quot;</span><span class='o'>);</span>
+			<span class='n'>Tweet</span> <span class='n'>tweet2</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>Tweet</span><span class='o'>(</span><span class='s'>&quot;piyush&quot;</span><span class='o'>,</span> <span class='s'>&quot;coding is my favorite stress buster!&quot;</span><span class='o'>);</span>
+			<span class='n'>Tweet</span> <span class='n'>tweet3</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>Tweet</span><span class='o'>(</span><span class='s'>&quot;kate&quot;</span><span class='o'>,</span> <span class='s'>&quot;i love spying with mockito)&quot;</span><span class='o'>);</span>
+
+			<span class='n'>when</span><span class='o'>(</span><span class='n'>downloadHelper</span><span class='o'>.</span><span class='na'>downloadTweets</span><span class='o'>()).</span><span class='na'>thenReturn</span><span class='o'>(</span><span class='n'>asList</span><span class='o'>(</span><span class='n'>tweet1</span><span class='o'>,</span> <span class='n'>tweet2</span><span class='o'>,</span> <span class='n'>tweet3</span><span class='o'>));</span>
+
+			<span class='kt'>int</span> <span class='n'>numberOfTweets</span> <span class='o'>=</span> <span class='n'>tweetCountService</span><span class='o'>.</span><span class='na'>countTweetsFrom</span><span class='o'>(</span><span class='s'>&quot;cece&quot;</span><span class='o'>);</span>
+
+			<span class='n'>assertEquals</span><span class='o'>(</span><span class='mi'>0</span><span class='o'>,</span> <span class='n'>numberOfTweets</span><span class='o'>);</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+</code></pre></div>
+<p>Other kinds of dependencies which infiltrate the code and make it really hard to test are static dependencies and thin air dependencies. Static dependencies for me are static method calls to a util/service class within some method. Static dependencies can come as global references, singletons or just plain static method calls. I generally use extract method and override refactoring to make this code more testable. One good thing about mockito is its support for partial mocks. You can &#8216;spy&#8217; on objects and mock only certain methods of the class. This is really powerful in the sense that in your test class you do not need to write boiler plate code of creating a class and overriding the methods that you need. I had wished for this convenience while testing with <a href='http://www.easymock.org/EasyMock2_2_2_ClassExtension_Documentation.html'>EasyMock</a> and <a href='http://www.unitils.org/'>Unitils</a>. Again, if you have to make methods protected instead of private, it may be worth looking back at the class to see how much work it is doing. It may be taking more responsibilities than it should. But remember, we are dealing with legacy code and improving legacy code overnight is not the easiest thing to do. Have a look at the test classes in the code for getting an idea on how to spy / partial mock classes.</p>
+
+<p>ThinAir dependencies as I like to call them are the dependencies grabbed out of thin air in a constructor/method call usually by creating a new instance of a collaborator class. These again are hard to mock and hence hard to test. We use parameterize constructor/adapt parameter refactoring to break these dependencies. If you come across code like the following, you know you have this kind of problem:</p>
+<div class='highlight'><pre><code class='java'>	<span class='kt'>void</span> <span class='nf'>m1</span><span class='o'>()</span> <span class='o'>{</span>
+		<span class='o'>...</span>
+		<span class='n'>TweetDownloader</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>TweetDownloader</span><span class='o'>();</span> <span class='c1'>// thin air dependency</span>
+		<span class='o'>...</span>
+	<span class='o'>}</span>
+
+	<span class='kt'>void</span> <span class='nf'>m2</span><span class='o'>()</span> <span class='o'>{</span>
+		<span class='o'>...</span>
+		<span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Tweet</span><span class='o'>&gt;</span> <span class='n'>tweets</span> <span class='o'>=</span> <span class='n'>TweetDownloader</span><span class='o'>.</span><span class='na'>downloadTweets</span><span class='o'>();</span> <span class='c1'>// static dependency</span>
+		<span class='o'>...</span>
+	<span class='o'>}</span>
+</code></pre></div>
+<p>Its like grabbing a dependency out of thin air! Ideal solution would be to inject dependencies, but tests first and then more pervasive refactoring is an implied rule in legacy.</p>
+
+<p>Please look at the example code to get an idea of how to use mockito with these kinds of problems. Code below is code after refactoring.</p>
+<div class='highlight'><pre><code class='java'>	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TweetCountService</span> <span class='o'>{</span>
+
+		<span class='kd'>public</span> <span class='kt'>int</span> <span class='nf'>countTweetsFrom</span><span class='o'>(</span><span class='n'>String</span> <span class='n'>user</span><span class='o'>)</span> <span class='o'>{</span>
+			<span class='n'>TweetDownloader</span> <span class='n'>downloader</span> <span class='o'>=</span> <span class='n'>createTweetDownloader</span><span class='o'>();</span>
+			<span class='n'>TweetPersister</span> <span class='n'>persister</span> <span class='o'>=</span> <span class='n'>createTweetPersister</span><span class='o'>();</span>
+			<span class='n'>List</span><span class='o'>&lt;</span><span class='n'>Tweet</span><span class='o'>&gt;</span> <span class='n'>tweets</span> <span class='o'>=</span> <span class='n'>downloader</span><span class='o'>.</span><span class='na'>downloadData</span><span class='o'>();</span>
+			<span class='kt'>int</span> <span class='n'>numberOfTweets</span> <span class='o'>=</span> <span class='mi'>0</span><span class='o'>;</span>
+			<span class='k'>for</span> <span class='o'>(</span><span class='n'>Tweet</span> <span class='n'>tweet</span> <span class='o'>:</span> <span class='n'>tweets</span><span class='o'>)</span> <span class='o'>{</span>
+				<span class='k'>if</span> <span class='o'>(</span><span class='n'>tweet</span><span class='o'>.</span><span class='na'>getUser</span><span class='o'>().</span><span class='na'>equals</span><span class='o'>(</span><span class='n'>user</span><span class='o'>))</span> <span class='o'>{</span>
+					<span class='n'>numberOfTweets</span><span class='o'>++;</span>
+				<span class='o'>}</span>
+			<span class='o'>}</span>
+			<span class='n'>persister</span><span class='o'>.</span><span class='na'>persistTweets</span><span class='o'>(</span><span class='n'>user</span><span class='o'>,</span> <span class='n'>numberOfTweets</span><span class='o'>);</span>
+			<span class='k'>return</span> <span class='n'>numberOfTweets</span><span class='o'>;</span>
+		<span class='o'>}</span>
+
+		<span class='kd'>protected</span> <span class='n'>TweetPersister</span> <span class='nf'>createTweetPersister</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='k'>return</span> <span class='k'>new</span> <span class='nf'>TweetPersister</span><span class='o'>();</span>
+		<span class='o'>}</span>
+
+		<span class='kd'>protected</span> <span class='n'>TweetDownloader</span> <span class='nf'>createTweetDownloader</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='k'>return</span> <span class='k'>new</span> <span class='nf'>TweetDownloader</span><span class='o'>();</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+
+
+	<span class='kd'>public</span> <span class='kd'>class</span> <span class='nc'>TweetCountServiceTestThinAir</span> <span class='o'>{</span>
+
+		<span class='nd'>@Test</span>
+		<span class='kd'>public</span> <span class='kt'>void</span> <span class='nf'>shouldReturnZeroTweetsForAPersonWithoutAnyTweets</span><span class='o'>()</span> <span class='o'>{</span>
+			<span class='n'>TweetCountService</span> <span class='n'>tweetCountService</span> <span class='o'>=</span> <span class='n'>spy</span><span class='o'>(</span><span class='k'>new</span> <span class='n'>TweetCountService</span><span class='o'>());</span>
+			<span class='n'>TweetDownloader</span> <span class='n'>downloader</span> <span class='o'>=</span> <span class='n'>mock</span><span class='o'>(</span><span class='n'>TweetDownloader</span><span class='o'>.</span><span class='na'>class</span><span class='o'>);</span>
+			<span class='n'>TweetPersister</span> <span class='n'>persister</span> <span class='o'>=</span> <span class='n'>mock</span><span class='o'>(</span><span class='n'>TweetPersister</span><span class='o'>.</span><span class='na'>class</span><span class='o'>);</span>
+
+			<span class='n'>Tweet</span> <span class='n'>tweet1</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>Tweet</span><span class='o'>(</span><span class='s'>&quot;piyush&quot;</span><span class='o'>,</span> <span class='s'>&quot;mockito is awesome!&quot;</span><span class='o'>);</span>
+			<span class='n'>Tweet</span> <span class='n'>tweet2</span> <span class='o'>=</span> <span class='k'>new</span> <span class='n'>Tweet</span><span class='o'>(</span><span class='s'>&quot;kate&quot;</span><span class='o'>,</span> <span class='s'>&quot;i love spying with mockito ;)&quot;</span><span class='o'>);</span>
+
+			<span class='n'>doReturn</span><span class='o'>(</span><span class='n'>downloader</span><span class='o'>).</span><span class='na'>when</span><span class='o'>(</span><span class='n'>tweetCountService</span><span class='o'>).</span><span class='na'>createTweetDownloader</span><span class='o'>();</span>
+			<span class='n'>doReturn</span><span class='o'>(</span><span class='n'>persister</span><span class='o'>).</span><span class='na'>when</span><span class='o'>(</span><span class='n'>tweetCountService</span><span class='o'>).</span><span class='na'>createTweetPersister</span><span class='o'>();</span>
+
+			<span class='n'>when</span><span class='o'>(</span><span class='n'>downloader</span><span class='o'>.</span><span class='na'>downloadData</span><span class='o'>()).</span><span class='na'>thenReturn</span><span class='o'>(</span><span class='n'>asList</span><span class='o'>(</span><span class='n'>tweet1</span><span class='o'>,</span> <span class='n'>tweet2</span><span class='o'>));</span>
+
+			<span class='kt'>int</span> <span class='n'>numberOfTweets</span> <span class='o'>=</span> <span class='n'>tweetCountService</span><span class='o'>.</span><span class='na'>countTweetsFrom</span><span class='o'>(</span><span class='s'>&quot;cece&quot;</span><span class='o'>);</span>
+
+			<span class='n'>assertEquals</span><span class='o'>(</span><span class='mi'>0</span><span class='o'>,</span> <span class='n'>numberOfTweets</span><span class='o'>);</span>
+		<span class='o'>}</span>
+	<span class='o'>}</span>
+</code></pre></div>
+<p>This was a very simple approach showing very simple examples of some not so good patterns you find in code. Even when starting on a green field project, make sure the system evolves in a non legacy manner. Write tests, follow TDD and see the results. Code evolves a lot better!</p>
+
+<p>Enjoy!</p>
+    <hr>
+    <div class="pagination btn-group">
+      
+        <a class="btn disabled prev">&larr; Previous</a>
+      
+        <a class="btn" href="/archive.html">Archive</a>
+      
+        <a class="btn next" href="/2013/01/15/feedback-loops---short-continuous-and-" title="Feedback Loops - Short, Continuous and ?">Next &rarr;</a>
+      
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jekyllbootstrap'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+  
+  <div class="span4">
+    <section>
+      <h4>Published</h4>
+      <div class="date"><span>13 January 2013</span></div>
+    </section>
+         
+    
+      <section>
+        <h4>Tags</h4>
+        <ul class="tag_box">
+          
+          
+
+
+  
+     
+    	<li><a href="/tags.html#mockito-ref">mockito <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#refactoring-ref">refactoring <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#legacy code-ref">legacy code <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#dependency injection-ref">dependency injection <span>1</span></a></li>
+    
+  
+
+
+
+        </ul>
+      </section>
+             
+  </div>
+</div>
+
+
+      </div>
+
+      <footer>
+        <p>&copy; Piyush Srivastava 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://github.com/dhulihan/hooligan" target="_blank">The Hooligan Theme</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
+
