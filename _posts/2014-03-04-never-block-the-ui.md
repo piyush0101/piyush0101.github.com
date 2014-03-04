@@ -11,7 +11,7 @@ One of the major factors in providing a good user experience is UI responsivenes
 
 There are two parts to a UI workflow - (i) Submitting a task for execution, (ii) Getting responses back and rendering them on the UI. It is very important to make sure that these two things maintain UI responsiveness. If a task is a long running computation, it should not block the user from doing other things.
 
-Swing is single threaded. All UI events (mouse clicks, drag and drop, window resizing etc) are dispatched on the Event Dispatch Thread (EDT). EDT is basically a FIFO queue of dispatched events which are executed in order. Any synchronous computation in this queue is going to block the events that are waiting. So, if you click on a button which this blocking operation is in progress, you would not notice any response from the UI. After the blocking operation is done, UI becomes responsive again. Sometimes, even blocking operations that take milliseconds have the combined effect of making the UI difficult to work with. Therefore, its preferable to only have UI rendering stuff on the EDT. Here is a sample `clojure` code which creates a button with an asynchronous listener.
+Swing is single threaded. All UI events (mouse clicks, drag and drop, window resizing etc) are dispatched on the Event Dispatch Thread (EDT). EDT is basically a FIFO queue of dispatched events which are executed in order. Any synchronous computation in this queue is going to block the events that are waiting. So, if you click on a button while this blocking operation is in progress, you would not notice any response from the UI. After the blocking operation is done, UI becomes responsive again. Sometimes, even blocking operations that take milliseconds have the combined effect of making the UI difficult to work with. Therefore, its preferable to only have UI rendering stuff on the EDT. Here is a sample `clojure` code which creates a button with an asynchronous listener.
 
 {% highlight clojure %}
 (defn create-async
@@ -29,7 +29,7 @@ Swing is single threaded. All UI events (mouse clicks, drag and drop, window res
       button)))
 {% endhighlight %}
 
-The code above adds an action listener to a button and starts a new thread to execute the function body passed in. EDT is free to process other events. To an avid reader, the next question would be "how do I get the response back from the forked off thread and update the UI components?". Java provides a utility class by the name `SwingUtilities` that can help us do that. `SwingUtilities` has a static method `invokeLater` which takes a Java `Runnable` and queues it up for execution on the EDT. What's more convenient is that `invokeLater` can be called from a thread which is not EDT. It has the smarts to find the EDT for you and queue up your computation. Another important point to note here is that execution of this `Runnable` on EDT is a blocking operation. So, the only thing that should happen on this runnable should be rendering of UI components with data which has already been generated. Here's a sample `clojure` code for rendering.
+The code above adds an action listener to a button and starts a new thread to execute the function body passed in. EDT is free to process other events. To an avid reader, the next question would be "how do I get the response back from the forked off thread and update the UI components?". Java provides a utility class by the name `SwingUtilities` that can help us do that. `SwingUtilities` has a static method `invokeLater` which takes a Java `Runnable` and queues it up for execution on the EDT. What's more convenient is that `invokeLater` can be called from a thread which is not EDT. It has the smarts to find the EDT for you and queue up your computation. Another important point to note here is that execution of this `Runnable` on EDT is a blocking operation. So, the only thing that should happen on this runnable should be rendering of UI components with data that has already been generated. Here's a sample `clojure` code for rendering.
 
 {% highlight clojure %}
 (defn update
@@ -39,6 +39,8 @@ The code above adds an action listener to a button and starts a new thread to ex
      (run []
           (.setText text-field "Hello World")))))
 {% endhighlight %}
+
+Same philosophy applies to Android, iOS and possibly other platforms. Create worker threads to do the computations and then update your components with data on the UI thread. Android has a `runOnUIThread` method on the `Activity` class that queues actions on the UI thread.
 
 Here's a simple Swing [application][nonblocking-swing] that follows much of what I have said.
 
