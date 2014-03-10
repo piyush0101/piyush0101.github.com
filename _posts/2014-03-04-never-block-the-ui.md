@@ -40,7 +40,7 @@ The code above adds an action listener to a button and starts a new thread to ex
           (.setText text-field "Hello World")))))
 {% endhighlight %}
 
-The event dispatching thread is called the **primordial worker** in Adobe Flash and the UI thread in .NET Framework and Android. Same philosophy applies to [Android][android], iOS, .NET and possibly other platforms. Create worker threads to do the computations and then update your components with data on the [UI thread][android-run-on-ui]. Android has a `runOnUIThread` method on the `Activity` class that queues actions on the UI thread.
+The event dispatching thread is called the [primordial worker][primordial] in Adobe Flash and the UI thread in .NET Framework and Android. Same philosophy applies to [Android][android], iOS, .NET and possibly other platforms. Create worker threads to do the computations and then update your components with data on the [UI thread][android-run-on-ui]. Android has a `runOnUIThread` method on the `Activity` class that queues actions on the UI thread.
 
 Here's a simple Swing [application][nonblocking-swing] that follows much of what I have said.
 
@@ -53,3 +53,4 @@ Here's a simple Swing [application][nonblocking-swing] that follows much of what
 [android-run-on-ui]: http://developer.android.com/reference/android/app/Activity.html#runOnUiThread(java.lang.Runnable)
 [android]: http://en.wikipedia.org/wiki/Android_(operating_system)
 [fifo]: http://en.wikipedia.org/wiki/FIFO
+[primordial]: http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/system/Worker.html
