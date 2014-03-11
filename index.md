@@ -5,14 +5,14 @@ tagline: software, life and more...
 ---
 {% include JB/setup %}
 
-## About Me  
+## About Me
 
-    
-Hi. Welcome to my blog. I am Piyush and I love to code, read - anything but fiction. I enjoy reading philosophical books, stuff related to computer science, software development, tech blogs and probably anything which makes me think about my work and life in general, write - mostly technical stuff though I might start blogging more about various things I learn from people around me. I am opinionated but with a very impressionable mindset. I am always on a lookout for mentors and people from whom I can learn. I am coding professionally for almost 3 years now and am enjoying it more as I dive deeper. I have worked developing flight scheduling solutions for airline/aviation industry. I recently joined [**Thought**Works][TW] because I felt a strong resonance in my values and goals with them. I am having fun here. Hope you enjoy my blogs.  
+
+Hi. Welcome to my blog. I am Piyush and I love to code, read - anything but fiction. I enjoy reading philosophical books, stuff related to computer science, software development, tech blogs and probably anything which makes me think about my work and life in general, write - mostly technical stuff though I might start blogging more about various things I learn from people around me. I am opinionated but with a very impressionable mindset. I am always on a lookout for mentors and people from whom I can learn. I am coding professionally for almost 3 years now and am enjoying it more as I dive deeper. I have worked developing flight scheduling solutions for airline/aviation industry. I recently joined [**Thought**Works][TW] because I felt a strong resonance in my values and goals with them. I am having fun here. Hope you enjoy my blogs.
 
 [TW]: http://www.thoughtworks.com
 
-## Blogs  
+## Blogs
 
 <ul class="posts">
   {% for post in site.posts %}
@@ -20,3 +20,7 @@ Hi. Welcome to my blog. I am Piyush and I love to code, read - anything but fict
   {% endfor %}
 </ul>
 
+## My github repo
+
+[Github][github]
+[github]: https://github.com/piyush0101/
